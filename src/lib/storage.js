@@ -27,15 +27,7 @@ const DEFAULT_WORKSPACES = [
   },
 ]
 
-const STRATEGY_PLACEHOLDER = `# Brand Mission
-
-# Target Audience
-
-# Content Pillars
-
-# Tone of Voice
-
-# Monthly Goals`
+const STRATEGY_PLACEHOLDER = `<h1>Brand Mission</h1><p></p><h1>Target Audience</h1><p></p><h1>Content Pillars</h1><p></p><h1>Tone of Voice</h1><p></p><h1>Monthly Goals</h1><p></p>`
 
 function readJSON(key, fallback) {
   try {
