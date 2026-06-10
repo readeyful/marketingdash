@@ -1,6 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom'
 import { ArrowLeftRight } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
+import TopBar from '../components/TopBar'
 import { useWorkspace } from '../context/workspace-context'
 import { getHeadingFont, getWorkspaceThemeVars } from '../lib/theme'
 
@@ -43,9 +44,12 @@ export default function AppLayout() {
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-6 pb-20 md:p-8 md:pb-8">
-        <Outlet />
-      </main>
+      <div className="flex flex-1 flex-col overflow-y-auto">
+        <TopBar />
+        <main className="flex-1 p-6 pb-20 md:p-8 md:pb-8">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }

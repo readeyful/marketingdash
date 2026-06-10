@@ -1,14 +1,8 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { ArrowLeftRight, Calendar, FileText, DollarSign, BookOpen } from 'lucide-react'
+import { ArrowLeftRight } from 'lucide-react'
 import { useWorkspace } from '../context/workspace-context'
 import { getHeadingFont } from '../lib/theme'
-
-const NAV_ITEMS = [
-  { to: '/calendar', label: 'Calendar', icon: Calendar },
-  { to: '/posts', label: 'Posts', icon: FileText },
-  { to: '/finances', label: 'Finances', icon: DollarSign },
-  { to: '/strategy', label: 'Strategy', icon: BookOpen },
-]
+import { NAV_ITEMS } from '../lib/nav'
 
 export default function Sidebar() {
   const { activeWorkspace } = useWorkspace()
@@ -56,7 +50,7 @@ export default function Sidebar() {
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                  `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                     isActive
                       ? 'text-[var(--brand-color)]'
                       : 'text-white/70 hover:bg-white/10 hover:text-white'
