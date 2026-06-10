@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { ArrowLeftRight } from 'lucide-react'
 import { useWorkspace } from '../context/workspace-context'
-import { getHeadingFont } from '../lib/theme'
+import { SIDEBAR_COLOR } from '../lib/theme'
 import { NAV_ITEMS } from '../lib/nav'
 
 export default function Sidebar() {
@@ -10,14 +10,14 @@ export default function Sidebar() {
 
   if (!activeWorkspace) return null
 
-  const { brandColor, accentColor } = activeWorkspace
+  const { accentColor } = activeWorkspace
 
   return (
     <>
       {/* Desktop sidebar */}
       <aside
         className="hidden h-screen w-60 shrink-0 flex-col justify-between p-4 md:flex"
-        style={{ backgroundColor: brandColor }}
+        style={{ backgroundColor: SIDEBAR_COLOR }}
       >
         <div>
           <div className="mb-8 flex items-center justify-between gap-2 px-2 pt-2">
@@ -26,10 +26,7 @@ export default function Sidebar() {
                 className="h-2.5 w-2.5 shrink-0 rounded-full"
                 style={{ backgroundColor: accentColor }}
               />
-              <span
-                className="truncate text-lg text-white"
-                style={{ fontFamily: getHeadingFont(activeWorkspace.id) }}
-              >
+              <span className="truncate text-lg text-white">
                 {activeWorkspace.name}
               </span>
             </div>
@@ -52,14 +49,10 @@ export default function Sidebar() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                     isActive
-                      ? 'text-[var(--brand-color)]'
+                      ? 'bg-white/10 text-white'
                       : 'text-white/70 hover:bg-white/10 hover:text-white'
                   }`
                 }
-                style={({ isActive }) => ({
-                  backgroundColor: isActive ? accentColor : 'transparent',
-                  '--brand-color': brandColor,
-                })}
               >
                 <Icon size={18} />
                 {label}
@@ -72,7 +65,7 @@ export default function Sidebar() {
       {/* Mobile bottom nav */}
       <nav
         className="fixed inset-x-0 bottom-0 z-10 flex justify-around border-t border-black/10 p-2 md:hidden"
-        style={{ backgroundColor: brandColor }}
+        style={{ backgroundColor: SIDEBAR_COLOR }}
       >
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink
@@ -81,14 +74,10 @@ export default function Sidebar() {
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                 isActive
-                  ? 'text-[var(--brand-color)]'
+                  ? 'bg-white/10 text-white'
                   : 'text-white/70 hover:text-white'
               }`
             }
-            style={({ isActive }) => ({
-              backgroundColor: isActive ? accentColor : 'transparent',
-              '--brand-color': brandColor,
-            })}
           >
             <Icon size={18} />
             {label}

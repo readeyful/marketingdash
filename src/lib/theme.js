@@ -1,19 +1,7 @@
-// Per-workspace visual tweaks that go beyond the brandColor / accentColor
-// already stored on the workspace object.
+// Shared neutral theme used across all workspaces. Per-workspace
+// brandColor/accentColor still live on the workspace object (used only
+// for the small workspace identifier dot) but no longer drive the
+// app's surface colors or fonts.
 
-const HEADING_FONTS = {
-  'ride-home-re': "'Anton', sans-serif",
-}
-
-export function getHeadingFont(workspaceId) {
-  return HEADING_FONTS[workspaceId] ?? "'Inter', ui-sans-serif, system-ui, sans-serif"
-}
-
-export function getWorkspaceThemeVars(workspace) {
-  if (!workspace) return {}
-  return {
-    '--brand-color': workspace.brandColor,
-    '--accent-color': workspace.accentColor,
-    '--font-heading': getHeadingFont(workspace.id),
-  }
-}
+export const SIDEBAR_COLOR = '#1A1A1A'
+export const ACCENT_COLOR = '#1A1A1A'
