@@ -11,3 +11,9 @@ export const INK_MUTED = '#9C958A'
 export const ACCENT_COLOR = INK
 
 export const STAT_ACCENTS = ['#2B211C', '#D7E654', '#86B6D8', '#E8884A']
+
+// Shared form control styling for inputs, selects, and textareas.
+export const INPUT_CLASS =
+  'w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm focus:border-black/20 focus:outline-none'
+
+export const LABEL_CLASS = 'mb-1 block text-xs font-medium'
