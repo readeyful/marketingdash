@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom'
 import { Bell, HelpCircle, Settings } from 'lucide-react'
 import { NAV_ITEMS } from '../lib/nav'
-import { INK_MUTED, SIDEBAR_COLOR } from '../lib/theme'
+import { INK_MUTED, PAGE_BG } from '../lib/theme'
 
 export default function TopBar() {
   const location = useLocation()
@@ -10,7 +10,7 @@ export default function TopBar() {
   return (
     <header
       className="hidden items-center justify-between border-b border-black/5 px-6 py-4 md:flex md:px-8"
-      style={{ backgroundColor: SIDEBAR_COLOR }}
+      style={{ backgroundColor: PAGE_BG }}
     >
       <span className="text-sm font-medium" style={{ color: INK_MUTED }}>
         {current?.label ?? ''}
