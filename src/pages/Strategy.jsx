@@ -3,6 +3,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { useEffect, useState } from 'react'
 import {
   Bold,
+  ExternalLink,
   Heading1,
   Heading2,
   Italic,
@@ -10,6 +11,7 @@ import {
   ListOrdered,
 } from 'lucide-react'
 import { useWorkspace } from '../context/workspace-context'
+import { BRAND_BOOKS } from '../lib/constants'
 import { getStrategy, saveStrategy } from '../lib/storage'
 import { CARD_BG, INK, INK_MUTED } from '../lib/theme'
 
@@ -140,6 +142,73 @@ function StrategyEditor({ workspaceId }) {
   )
 }
 
+function BrandBookView({ src, label }) {
+  return (
+    <div
+      className="mt-8 overflow-hidden rounded-2xl"
+      style={{ backgroundColor: CARD_BG }}
+    >
+      <div className="flex items-center justify-between border-b border-black/5 px-4 py-3">
+        <span className="text-sm font-medium" style={{ color: INK_MUTED }}>
+          {label}
+        </span>
+        <a
+          href={src}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition hover:bg-black/5"
+          style={{ color: INK }}
+        >
+          <ExternalLink size={14} />
+          Open in new tab
+        </a>
+      </div>
+      <iframe
+        src={src}
+        title={label}
+        className="h-[80vh] w-full border-0"
+      />
+    </div>
+  )
+}
+
+function StrategyContent({ workspaceId }) {
+  const brandBook = BRAND_BOOKS[workspaceId]
+  const [activeTab, setActiveTab] = useState('notes')
+
+  return (
+    <>
+      {brandBook && (
+        <div className="mt-6 flex gap-1 rounded-full p-1" style={{ backgroundColor: CARD_BG, width: 'fit-content' }}>
+          {[
+            { id: 'notes', label: 'Strategy Notes' },
+            { id: 'brand-book', label: brandBook.label },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className="rounded-full px-4 py-1.5 text-sm font-medium transition"
+              style={{
+                backgroundColor: activeTab === tab.id ? INK : 'transparent',
+                color: activeTab === tab.id ? '#FFFFFF' : INK_MUTED,
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {activeTab === 'notes' || !brandBook ? (
+        <StrategyEditor workspaceId={workspaceId} />
+      ) : (
+        <BrandBookView src={brandBook.src} label={brandBook.label} />
+      )}
+    </>
+  )
+}
+
 export default function Strategy() {
   const { activeWorkspace } = useWorkspace()
 
@@ -153,7 +222,7 @@ export default function Strategy() {
       </p>
 
       {activeWorkspace && (
-        <StrategyEditor key={activeWorkspace.id} workspaceId={activeWorkspace.id} />
+        <StrategyContent key={activeWorkspace.id} workspaceId={activeWorkspace.id} />
       )}
     </div>
   )

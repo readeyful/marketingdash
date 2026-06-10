@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ride Home Real Estate — Brand Book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =============================================
+   DESIGN TOKENS
+   ============================================= */
+:root {
+  --plum:       #452C4A;
+  --plum-deep:  #261829;
+  --plum-mid:   #3A2340;
+  --cream:      #F2F0EA;
+  --cream-warm: #E8E3D8;
+  --green:      #BFE35D;
+  --green-dim:  #93BF2E;
+  --ink:        #1A0F14;
+  --stone:      #8A7D85;
+  --rule:       #DFD9CD;
+
+  --f-display: "Anton", Impact, sans-serif;
+  --f-body:    "Inter", system-ui, sans-serif;
+  --f-script:  "Caveat", cursive;
+}
+
+/* =============================================
+   RESET & BASE
+   ============================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--f-body);
+  background: var(--cream);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* =============================================
+   LAYOUT
+   ============================================= */
+.page-wrap { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
+.section { padding: 80px 0; border-bottom: 1px solid var(--rule); }
+.section:last-child { border-bottom: none; }
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--f-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--plum);
+  margin-bottom: 20px;
+}
+.section-eyebrow::before {
+  content: attr(data-n);
+  background: var(--plum);
+  color: var(--green);
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.section-title {
+  font-family: var(--f-display);
+  font-size: clamp(44px, 6vw, 80px);
+  line-height: 0.92;
+  text-transform: uppercase;
+  color: var(--plum);
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+}
+.section-intro {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink);
+  max-width: 700px;
+  margin-bottom: 52px;
+}
+
+/* grid helpers */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.g5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+@media (max-width: 1000px) {
+  .g5 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .g2, .g3, .g4, .g5 { grid-template-columns: 1fr; }
+  .page-wrap { padding: 0 20px; }
+  .section { padding: 56px 0; }
+}
+
+/* =============================================
+   COVER / HERO
+   ============================================= */
+.cover {
+  background: var(--plum-deep);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 56px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: "";
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(198,242,78,.18) 0%, transparent 65%);
+  pointer-events: none;
+}
+.cover::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 240px;
+  background: linear-gradient(to top, rgba(198,242,78,.06), transparent);
+  pointer-events: none;
+}
+.cover-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.cover-badge {
+  font-family: var(--f-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--green);
+  background: rgba(198,242,78,.12);
+  border: 1px solid rgba(198,242,78,.25);
+  padding: 8px 16px;
+  border-radius: 999px;
+}
+.cover-date {
+  font-family: var(--f-body);
+  font-size: 10px;
+  color: rgba(242,240,234,.4);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+.cover-center {
+  position: relative;
+  z-index: 1;
+}
+.cover-pretitle {
+  font-family: var(--f-script);
+  font-size: 28px;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+.cover-title {
+  font-family: var(--f-display);
+  font-size: clamp(72px, 12vw, 160px);
+  line-height: 0.86;
+  text-transform: uppercase;
+  color: var(--cream);
+  letter-spacing: -0.02em;
+}
+.cover-title .gr { color: var(--green); }
+.cover-sub {
+  font-family: var(--f-body);
+  font-size: 16px;
+  color: rgba(242,240,234,.65);
+  margin-top: 24px;
+  max-width: 560px;
+  line-height: 1.6;
+}
+.cover-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative; z-index: 1;
+}
+.cover-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cover-nav a {
+  color: rgba(242,240,234,.5);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border: 1px solid rgba(242,240,234,.15);
+  border-radius: 999px;
+  transition: all .15s ease;
+}
+.cover-nav a:hover { color: var(--green); border-color: var(--green); }
+.cover-version {
+  font-family: var(--f-body);
+  font-size: 10px;
+  color: rgba(242,240,234,.3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* doodle arrows on cover */
+.cover-doodle {
+  position: absolute;
+  right: 60px; top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  opacity: .6;
+  pointer-events: none;
+}
+@media (max-width: 900px) { .cover-doodle { display: none; } }
+
+/* =============================================
+   PALETTE
+   ============================================= */
+.swatch-row {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1.2fr 1.2fr 1.2fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+@media (max-width: 900px) { .swatch-row { grid-template-columns: 1fr 1fr; } }
+
+.swatch {
+  border-radius: 16px;
+  padding: 20px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.swatch-role {
+  font-family: var(--f-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: .7;
+}
+.swatch-name {
+  font-family: var(--f-display);
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+.swatch-codes {
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  opacity: .85;
+}
+.sw-plum    { background: var(--plum); color: var(--cream); }
+.sw-green   { background: var(--green); color: var(--ink); }
+.sw-cream   { background: var(--cream); color: var(--ink); border: 1px solid var(--rule); }
+.sw-deep    { background: var(--plum-deep); color: var(--green); }
+.sw-ink     { background: var(--ink); color: var(--cream); }
+
+.usage-strip {
+  height: 52px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  margin-top: 8px;
+  font-family: var(--f-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.usage-strip > div {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+.us-plum  { background: var(--plum); color: var(--cream); flex: 55; }
+.us-cream { background: var(--cream); color: var(--ink); flex: 25; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.us-green { background: var(--green); color: var(--ink); flex: 15; }
+.us-ink   { background: var(--ink); color: var(--cream); flex: 5; }
+
+.usage-note {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--stone);
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+/* =============================================
+   TYPOGRAPHY
+   ============================================= */
+.type-showcase {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 48px;
+  align-items: start;
+  padding: 40px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.type-showcase:last-child { border-bottom: none; }
+@media (max-width: 800px) { .type-showcase { grid-template-columns: 1fr; } }
+
+.type-meta .tl {
+  font-family: var(--f-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--plum);
+  margin-bottom: 12px;
+}
+.type-meta .tm {
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  color: var(--stone);
+  line-height: 1.8;
+}
+.type-meta .tm strong { color: var(--plum); }
+
+.ts-display {
+  font-family: var(--f-display);
+  font-size: clamp(56px, 8vw, 104px);
+  line-height: 0.88;
+  text-transform: uppercase;
+  color: var(--plum);
+  letter-spacing: -0.01em;
+}
+.ts-display .hl { position: relative; display: inline-block; }
+.ts-display .hl::after {
+  content: "";
+  position: absolute;
+  left: -4px; right: -4px;
+  bottom: 6%; height: 24%;
+  background: var(--green);
+  z-index: -1;
+  transform: skew(-1deg);
+}
+
+.ts-body {
+  font-family: var(--f-body);
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--ink);
+  max-width: 580px;
+}
+.ts-body strong { font-weight: 700; }
+
+.ts-script {
+  font-family: var(--f-script);
+  font-size: 40px;
+  color: var(--plum);
+  line-height: 1.1;
+}
+
+.type-scale {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+.scale-row {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--rule);
+}
+.scale-row:last-child { border-bottom: none; }
+.scale-label {
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  color: var(--stone);
+  width: 120px;
+  flex-shrink: 0;
+}
+.scale-sample {
+  font-family: var(--f-display);
+  text-transform: uppercase;
+  color: var(--plum);
+  line-height: 1;
+}
+
+/* =============================================
+   LOGO LOCKUPS
+   ============================================= */
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 800px) { .logo-grid { grid-template-columns: 1fr; } }
+
+.logo-tile {
+  aspect-ratio: 16/10;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+  position: relative;
+}
+.logo-wm {
+  font-family: var(--f-display);
+  font-size: 42px;
+  line-height: 0.92;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+.logo-tagline {
+  font-family: var(--f-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  margin-top: 12px;
+}
+.logo-script {
+  font-family: var(--f-script);
+  font-size: 18px;
+  margin-top: 4px;
+}
+.logo-cap {
+  position: absolute;
+  bottom: 12px; left: 16px;
+  font-family: var(--f-body);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: .5;
+}
+
+.lt-cream { background: var(--cream); border: 1px solid var(--rule); }
+.lt-cream .logo-wm { color: var(--plum); }
+.lt-cream .logo-tagline { color: var(--stone); }
+.lt-cream .logo-script { color: var(--plum); }
+.lt-cream .logo-cap { color: var(--stone); }
+
+.lt-plum { background: var(--plum); }
+.lt-plum .logo-wm { color: var(--cream); }
+.lt-plum .logo-tagline { color: var(--green); }
+.lt-plum .logo-script { color: rgba(242,240,234,.7); }
+.lt-plum .logo-cap { color: var(--cream); }
+
+.lt-green { background: var(--green); }
+.lt-green .logo-wm { color: var(--ink); }
+.lt-green .logo-tagline { color: var(--plum); }
+.lt-green .logo-script { color: var(--plum); }
+.lt-green .logo-cap { color: var(--ink); }
+
+.lt-deep { background: var(--plum-deep); }
+.lt-deep .logo-wm { color: var(--green); }
+.lt-deep .logo-tagline { color: rgba(242,240,234,.7); }
+.lt-deep .logo-script { color: rgba(242,240,234,.5); }
+.lt-deep .logo-cap { color: rgba(242,240,234,.5); }
+
+/* =============================================
+   POST FORMULA
+   ============================================= */
+.formula-bar {
+  background: var(--plum-deep);
+  border-radius: 20px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+.formula-bar::before {
+  content: "";
+  position: absolute; top: -120px; right: -120px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(198,242,78,.15), transparent 65%);
+  pointer-events: none;
+}
+.formula-bar h3 {
+  font-family: var(--f-display);
+  font-size: 32px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 28px;
+  position: relative;
+}
+.formula-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  position: relative;
+}
+@media (max-width: 800px) { .formula-steps { grid-template-columns: 1fr 1fr; } }
+.fstep { border-top: 2px solid var(--green); padding-top: 14px; }
+.fstep-n { font-family: var(--f-display); font-size: 16px; color: var(--green); margin-bottom: 4px; }
+.fstep-t { font-weight: 700; font-size: 16px; color: var(--cream); margin-bottom: 6px; }
+.fstep-d { font-size: 13px; color: rgba(242,240,234,.6); line-height: 1.5; }
+
+/* =============================================
+   14 INSTAGRAM POSTS
+   ============================================= */
+.posts-intro {
+  font-size: 16px;
+  color: var(--stone);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+.posts-label {
+  font-family: var(--f-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 8px;
+}
+.posts-label .day { color: var(--plum); font-size: 11px; }
+
+.ig-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+@media (max-width: 1200px) { .ig-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 700px)  { .ig-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.ig-post {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: default;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.ig-post:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(26,15,20,.25);
+}
+
+/* day badge */
+.day-badge {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  font-family: var(--f-body);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+
+/* post text elements */
+.p-eyebrow {
+  font-family: var(--f-body);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+.p-head {
+  font-family: var(--f-display);
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  font-size: 24px;
+}
+.p-sub {
+  font-family: var(--f-body);
+  font-size: 8px;
+  line-height: 1.4;
+  opacity: .75;
+  margin-top: 5px;
+}
+.p-script {
+  font-family: var(--f-script);
+  font-size: 18px;
+  line-height: 1.1;
+}
+.p-accent { color: var(--green); }
+.p-hl {
+  position: relative; display: inline;
+  background: var(--green);
+  color: var(--ink);
+  padding: 0 3px;
+}
+.p-num {
+  font-family: var(--f-display);
+  font-size: 52px;
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  color: var(--green);
+}
+.p-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--green);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 999px;
+  align-self: flex-start;
+}
+.p-arrow {
+  position: absolute;
+  bottom: 14px; right: 14px;
+  color: var(--green);
+  opacity: .9;
+}
+.p-handle {
+  font-family: var(--f-body);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  opacity: .5;
+  align-self: flex-end;
+}
+
+/* ---- BACKGROUND STYLES ---- */
+.bg-plum     { background: var(--plum); color: var(--cream); }
+.bg-deep     { background: var(--plum-deep); color: var(--cream); }
+.bg-cream    { background: var(--cream); color: var(--plum); border: 1px solid var(--rule); }
+.bg-green    { background: var(--green); color: var(--ink); }
+.bg-ink      { background: var(--ink); color: var(--cream); }
+
+/* glow overlay for dark posts */
+.glow::after {
+  content: "";
+  position: absolute; top: -60%; right: -60%;
+  width: 160%; height: 160%;
+  background: radial-gradient(circle, rgba(198,242,78,.14) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* diag stripe for energy */
+.stripe::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 18px,
+    rgba(255,255,255,.02) 18px,
+    rgba(255,255,255,.02) 19px
+  );
+  pointer-events: none;
+}
+
+/* =============================================
+   VOICE & TONE
+   ============================================= */
+.voice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+@media (max-width: 800px) { .voice-grid { grid-template-columns: 1fr; } }
+.voice-card {
+  background: var(--cream-warm);
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid var(--rule);
+}
+.voice-pair {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.voice-yes {
+  font-family: var(--f-display);
+  font-size: 22px;
+  text-transform: uppercase;
+  background: var(--green);
+  color: var(--ink);
+  padding: 0 8px;
+  border-radius: 4px;
+}
+.voice-no {
+  font-family: var(--f-display);
+  font-size: 18px;
+  text-transform: uppercase;
+  color: var(--stone);
+  text-decoration: line-through;
+}
+.voice-desc { font-size: 13px; line-height: 1.6; color: var(--ink); }
+
+/* =============================================
+   RULES
+   ============================================= */
+.rules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 800px) { .rules-grid { grid-template-columns: 1fr; } }
+
+.rule-card {
+  background: var(--cream-warm);
+  border-radius: 16px;
+  padding: 28px;
+}
+.rule-card.do   { border-left: 4px solid var(--green); }
+.rule-card.dont { border-left: 4px solid var(--plum); }
+
+.rule-head {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--f-display);
+  font-size: 26px;
+  text-transform: uppercase;
+  color: var(--plum);
+  margin-bottom: 18px;
+  letter-spacing: .01em;
+}
+.rule-badge {
+  background: var(--plum);
+  color: var(--green);
+  font-family: var(--f-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+.rule-list { list-style: none; }
+.rule-list li {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--rule);
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+  display: flex; gap: 10px;
+}
+.rule-list li:last-child { border-bottom: none; }
+.rule-list li::before { content: "→"; color: var(--plum); flex-shrink: 0; font-weight: 700; }
+.dont .rule-list li::before { content: "×"; color: #B91C1C; }
+
+/* =============================================
+   CANVA CHECKLIST
+   ============================================= */
+.canva-block {
+  background: var(--plum-deep);
+  border-radius: 20px;
+  padding: 48px;
+  color: var(--cream);
+  position: relative;
+  overflow: hidden;
+}
+.canva-block::before {
+  content: "";
+  position: absolute; top: -80px; right: -80px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(198,242,78,.12), transparent 60%);
+  pointer-events: none;
+}
+.canva-block h3 {
+  font-family: var(--f-display);
+  font-size: 36px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 28px;
+  position: relative;
+}
+.canva-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  position: relative;
+}
+@media (max-width: 800px) { .canva-grid { grid-template-columns: 1fr; } }
+.canva-col h4 {
+  font-family: var(--f-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(198,242,78,.2);
+}
+.canva-col ul { list-style: none; }
+.canva-col li {
+  font-size: 13px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(242,240,234,.06);
+  color: rgba(242,240,234,.85);
+  display: flex;
+  gap: 8px;
+  line-height: 1.4;
+}
+.canva-col li:last-child { border-bottom: none; }
+.canva-col li::before { content: "·"; color: var(--green); flex-shrink: 0; }
+
+/* =============================================
+   ROLLOUT
+   ============================================= */
+.rollout-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 800px) { .rollout-grid { grid-template-columns: 1fr; } }
+.rollout-card {
+  background: var(--cream-warm);
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid var(--rule);
+}
+.rollout-days {
+  font-family: var(--f-display);
+  font-size: 60px;
+  color: var(--green);
+  line-height: 0.9;
+  margin-bottom: 4px;
+}
+.rollout-phase {
+  font-family: var(--f-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--plum);
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+.rollout-list { list-style: none; }
+.rollout-list li {
+  font-size: 13px;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--rule);
+  display: flex; gap: 10px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.rollout-list li:last-child { border-bottom: none; }
+.rollout-list li::before { content: "→"; color: var(--plum); flex-shrink: 0; }
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.brand-footer {
+  background: var(--plum-deep);
+  padding: 80px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.brand-footer::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 120%, rgba(198,242,78,.12), transparent 60%);
+}
+.brand-footer h2 {
+  font-family: var(--f-display);
+  font-size: clamp(48px, 8vw, 96px);
+  text-transform: uppercase;
+  color: var(--green);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  position: relative;
+  margin-bottom: 8px;
+}
+.brand-footer .tagline {
+  font-family: var(--f-script);
+  font-size: 28px;
+  color: rgba(242,240,234,.6);
+  position: relative;
+  margin-bottom: 24px;
+}
+.brand-footer .meta {
+  font-family: var(--f-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(242,240,234,.3);
+  position: relative;
+}
+
+/* =============================================
+   CONTENT STACK (v2)
+   ============================================= */
+.stack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 48px; }
+@media (max-width: 1000px) { .stack-grid { grid-template-columns: 1fr; } }
+
+.tier-card {
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.tier-card .tier-head {
+  padding: 22px 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tier-card.t1 .tier-head { background: var(--green); color: var(--plum-deep); }
+.tier-card.t2 .tier-head { background: var(--plum); color: var(--cream); }
+.tier-card.t3 .tier-head { background: var(--plum-deep); color: var(--cream); }
+.tier-num {
+  font-family: var(--f-body);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+.tier-name {
+  font-family: var(--f-display);
+  font-size: 30px;
+  text-transform: uppercase;
+  line-height: .95;
+}
+.tier-card.t3 .tier-name span { color: var(--green); }
+.tier-job {
+  font-family: var(--f-script);
+  font-size: 19px;
+  font-weight: 600;
+}
+.tier-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.tier-desc { font-size: 14px; line-height: 1.6; color: var(--ink); }
+.tier-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.tier-list li {
+  font-size: 13.5px;
+  line-height: 1.45;
+  padding-left: 20px;
+  position: relative;
+  color: var(--ink);
+}
+.tier-list li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--green-dim);
+  font-weight: 700;
+}
+.tier-foot {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px dashed var(--rule);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+/* mix strip — mirrors the color usage strip */
+.mix-strip {
+  display: flex;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: var(--f-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.mix-strip > div { display: flex; align-items: center; justify-content: center; }
+.mx-t1 { flex: 0 0 50%; background: var(--green); color: var(--plum-deep); }
+.mx-t2 { flex: 0 0 30%; background: var(--plum); color: var(--cream); }
+.mx-t3 { flex: 0 0 20%; background: var(--plum-deep); color: var(--green); }
+
+/* funnel callout */
+.stack-callout {
+  margin-top: 48px;
+  background: var(--plum);
+  color: var(--cream);
+  border-radius: 16px;
+  padding: 40px 44px;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 36px;
+  align-items: center;
+}
+@media (max-width: 800px) { .stack-callout { grid-template-columns: 1fr; padding: 32px 28px; } }
+.stack-callout h3 {
+  font-family: var(--f-display);
+  font-size: clamp(28px, 3.4vw, 44px);
+  text-transform: uppercase;
+  line-height: .95;
+}
+.stack-callout h3 span { color: var(--green); }
+.stack-callout p { font-size: 14.5px; line-height: 1.7; color: rgba(242,240,234,.88); }
+.stack-callout p strong { color: var(--green); font-weight: 700; }
+
+/* tier pills on the 14-day grid */
+.tier-pill {
+  display: inline-block;
+  font-family: var(--f-body);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  vertical-align: 1px;
+}
+.tier-pill.tp1 { background: var(--green); color: var(--plum-deep); }
+.tier-pill.tp2 { background: var(--plum); color: var(--cream); }
+.tier-pill.tp3 { background: var(--plum-deep); color: var(--green); }
+</style>
+</head>
+<body>
+
+<!-- =============================================
+     COVER
+     ============================================= -->
+<div class="cover">
+  <div class="cover-top">
+    <div class="cover-badge">Brand Book · v2.0</div>
+    <div class="cover-date">Bellingham, WA · 2026</div>
+  </div>
+
+  <div class="cover-center">
+    <div class="cover-pretitle">your route home starts here</div>
+    <div class="cover-title">
+      Ride<br><span class="gr">Home</span><br>RE
+    </div>
+    <div class="cover-sub">
+      The complete brand system for Ride Home Real Estate — typography, colors, voice, the three-tier content stack, and a 14-day Instagram launch plan.
+    </div>
+  </div>
+
+  <!-- doodle arrows -->
+  <svg class="cover-doodle" viewBox="0 0 300 380" fill="none">
+    <path d="M 30 80 Q 120 20, 240 100 T 280 60" stroke="#BFE35D" stroke-width="2.5" stroke-linecap="round"/>
+    <polyline points="266,50 280,60 272,74" stroke="#BFE35D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 60 180 Q 140 150, 220 200" stroke="#BFE35D" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 8"/>
+    <polyline points="210,192 220,200 212,212" stroke="#BFE35D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 80 280 Q 160 310, 240 270" stroke="#BFE35D" stroke-width="2.5" stroke-linecap="round"/>
+    <polyline points="230,260 240,270 230,282" stroke="#BFE35D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- houses -->
+    <g stroke="#BFE35D" stroke-width="2.5" fill="none" stroke-linejoin="round">
+      <path d="M 200 130 L 222 112 L 244 130 L 244 160 L 200 160 Z"/>
+      <rect x="216" y="144" width="12" height="16"/>
+      <line x1="200" y1="130" x2="244" y2="130"/>
+    </g>
+    <g stroke="#BFE35D" stroke-width="2" fill="none" stroke-linejoin="round" opacity=".6">
+      <path d="M 40 310 L 58 295 L 76 310 L 76 335 L 40 335 Z"/>
+      <rect x="54" y="320" width="9" height="15"/>
+    </g>
+  </svg>
+
+  <div class="cover-bottom">
+    <nav class="cover-nav">
+      <a href="#palette">Colors</a>
+      <a href="#type">Type</a>
+      <a href="#logos">Logos</a>
+      <a href="#stack">Content Stack</a>
+      <a href="#voice">Voice</a>
+      <a href="#posts">14 Posts</a>
+      <a href="#canva">Canva Setup</a>
+      <a href="#rollout">Rollout</a>
+    </nav>
+    <div class="cover-version">Mike Augustine · eXp Realty</div>
+  </div>
+</div>
+
+<!-- =============================================
+     01 · PALETTE
+     ============================================= -->
+<section class="section" id="palette">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="01">Colors</div>
+    <h2 class="section-title">The palette.</h2>
+    <p class="section-intro">
+      Your plum anchor stays. It's warm enough to feel local and crafted, modern enough to stand out from every blue-and-white real estate brand in Bellingham. The neon green is your secret weapon — it's the one thing people remember.
+    </p>
+
+    <div class="swatch-row">
+      <div class="swatch sw-plum">
+        <div class="swatch-role">Primary · Anchor · 55%</div>
+        <div>
+          <div class="swatch-name">Ride Plum</div>
+          <div class="swatch-codes">
+            HEX #452C4A<br>
+            RGB 69 · 44 · 74<br>
+            Use: headlines, backgrounds, logo
+          </div>
+        </div>
+      </div>
+      <div class="swatch sw-green">
+        <div class="swatch-role">Accent · Energy · 15%</div>
+        <div>
+          <div class="swatch-name">Ride Green</div>
+          <div class="swatch-codes">
+            HEX #BFE35D<br>
+            RGB 198 · 242 · 78<br>
+            Use: 1 word per post, CTAs, tags
+          </div>
+        </div>
+      </div>
+      <div class="swatch sw-cream">
+        <div class="swatch-role">Canvas · 25%</div>
+        <div>
+          <div class="swatch-name">Cream</div>
+          <div class="swatch-codes">
+            HEX #F2F0EA<br>
+            RGB 242 · 240 · 234<br>
+            Use: backgrounds, cards, light posts
+          </div>
+        </div>
+      </div>
+      <div class="swatch sw-deep">
+        <div class="swatch-role">Depth · Backgrounds</div>
+        <div>
+          <div class="swatch-name">Deep Plum</div>
+          <div class="swatch-codes">
+            HEX #261829<br>
+            RGB 38 · 24 · 41<br>
+            Use: dark posts, footers, overlays
+          </div>
+        </div>
+      </div>
+      <div class="swatch sw-ink">
+        <div class="swatch-role">Text · 5%</div>
+        <div>
+          <div class="swatch-name">Ink</div>
+          <div class="swatch-codes">
+            HEX #1A0F14<br>
+            RGB 26 · 15 · 20<br>
+            Use: body copy only
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-family:var(--f-body);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);margin-bottom:10px;">Usage Ratio</div>
+      <div class="usage-strip">
+        <div class="us-plum">Plum 55%</div>
+        <div class="us-cream">Cream 25%</div>
+        <div class="us-green">Green 15%</div>
+        <div class="us-ink">5%</div>
+      </div>
+      <p class="usage-note">
+        Plum does the heavy lifting. Cream breathes. Green is the exclamation mark — if it's everywhere, it's nowhere. Use it on exactly <strong>one word or element per post</strong>, and it keeps its punch.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     02 · TYPOGRAPHY
+     ============================================= -->
+<section class="section" id="type">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="02">Typography</div>
+    <h2 class="section-title">Three fonts.<br>One voice.</h2>
+    <p class="section-intro">
+      All three are free on Google Fonts. Anton shouts. Inter explains. Caveat adds humanity. You never need anything else.
+    </p>
+
+    <div class="type-showcase">
+      <div class="type-meta">
+        <div class="tl">Display · Headlines</div>
+        <div class="tm">
+          <strong>Anton</strong><br>
+          Google Fonts · Free<br>
+          Weight: 400 (only weight)<br>
+          Case: ALL CAPS always<br>
+          Leading: 0.88–0.92<br>
+          Tracking: −0.01em<br>
+          Use: H1, H2, post headlines, logo, billboards
+        </div>
+      </div>
+      <div>
+        <div class="ts-display">Sell more<br><span class="hl">homes.</span></div>
+      </div>
+    </div>
+
+    <div class="type-showcase">
+      <div class="type-meta">
+        <div class="tl">Body · Workhorse</div>
+        <div class="tm">
+          <strong>Inter</strong><br>
+          Google Fonts · Free<br>
+          Weights: 400, 600, 700<br>
+          Case: Sentence case<br>
+          Leading: 1.55–1.65<br>
+          Use: captions, body copy, UI, buttons, eyebrows
+        </div>
+      </div>
+      <div>
+        <p class="ts-body">
+          Real estate in Bellingham isn't like anywhere else. Whether you're buying your first home in Lettered Streets or selling a craftsman in Fairhaven, I make every step feel <strong>clear, calm, and honest</strong>. Your route home starts here.
+        </p>
+      </div>
+    </div>
+
+    <div class="type-showcase">
+      <div class="type-meta">
+        <div class="tl">Accent · Personality</div>
+        <div class="tm">
+          <strong>Caveat</strong><br>
+          Google Fonts · Free<br>
+          Weight: 500–700<br>
+          Use: tags, asides, warmth moments<br>
+          Max 1× per post<br>
+          Never for headlines
+        </div>
+      </div>
+      <div>
+        <div class="ts-script">prefer a phone call?<br>save this for later →<br>your route home starts here</div>
+      </div>
+    </div>
+
+    <div style="margin-top:48px;">
+      <div style="font-family:var(--f-body);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);margin-bottom:20px;">Type Scale</div>
+      <div class="type-scale">
+        <div class="scale-row">
+          <div class="scale-label">Display · 96px</div>
+          <div class="scale-sample" style="font-size:72px;line-height:0.9;">Start here</div>
+        </div>
+        <div class="scale-row">
+          <div class="scale-label">H1 · 64px</div>
+          <div class="scale-sample" style="font-size:52px;line-height:0.9;">Want to sell?</div>
+        </div>
+        <div class="scale-row">
+          <div class="scale-label">H2 · 48px</div>
+          <div class="scale-sample" style="font-size:40px;line-height:0.9;">Fairhaven market update</div>
+        </div>
+        <div class="scale-row">
+          <div class="scale-label">H3 · 32px</div>
+          <div class="scale-sample" style="font-size:28px;line-height:0.9;">3 things buyers miss</div>
+        </div>
+        <div class="scale-row">
+          <div class="scale-label">Eyebrow · 10px</div>
+          <div style="font-family:var(--f-body);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--plum);">For first-time buyers</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     03 · LOGO LOCKUPS
+     ============================================= -->
+<section class="section" id="logos">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="03">Wordmark</div>
+    <h2 class="section-title">Four surfaces.<br>One mark.</h2>
+    <p class="section-intro">
+      The wordmark uses Anton stacked tight — confident and legible at any size. Use the plum version on cream for most applications; reverse to cream on plum for dark backgrounds. Never place the mark on a busy photo without an overlay.
+    </p>
+
+    <div class="logo-grid">
+      <div class="logo-tile lt-cream">
+        <div class="logo-wm">Ride Home<br>Real Estate</div>
+        <div class="logo-tagline">Bellingham · WA</div>
+        <div class="logo-script">your route home</div>
+        <div class="logo-cap">Primary · Cream</div>
+      </div>
+      <div class="logo-tile lt-plum">
+        <div class="logo-wm">Ride Home<br>Real Estate</div>
+        <div class="logo-tagline">Bellingham · WA</div>
+        <div class="logo-script">your route home</div>
+        <div class="logo-cap">Reverse · Plum</div>
+      </div>
+      <div class="logo-tile lt-green">
+        <div class="logo-wm">Ride Home<br>Real Estate</div>
+        <div class="logo-tagline">Bellingham · WA</div>
+        <div class="logo-script">your route home</div>
+        <div class="logo-cap">Accent · Green</div>
+      </div>
+    </div>
+
+    <div class="logo-grid" style="margin-top:16px;">
+      <div class="logo-tile lt-deep">
+        <div class="logo-wm">Ride Home<br>Real Estate</div>
+        <div class="logo-tagline">Bellingham · WA</div>
+        <div class="logo-script">your route home</div>
+        <div class="logo-cap">Dark · Deep Plum</div>
+      </div>
+      <div class="logo-tile" style="background:var(--cream-warm);border:1px solid var(--rule);">
+        <div style="font-family:var(--f-body);font-size:12px;color:var(--stone);text-align:center;line-height:1.6;">
+          <strong style="color:var(--plum);display:block;font-family:var(--f-display);font-size:18px;text-transform:uppercase;letter-spacing:0;margin-bottom:8px;">Never do this</strong>
+          Never stretch, rotate, recolor, or use a decorative font other than Anton for the wordmark.
+          Never place on a busy background without a solid overlay.
+        </div>
+        <div class="logo-cap">Usage Rules</div>
+      </div>
+      <div class="logo-tile" style="background:var(--plum);position:relative;overflow:hidden;">
+        <!-- min size demo -->
+        <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;width:100%;">
+          <div style="font-family:var(--f-display);font-size:32px;text-transform:uppercase;color:var(--cream);line-height:0.9;">Ride Home<br>RE</div>
+          <div style="font-family:var(--f-display);font-size:20px;text-transform:uppercase;color:var(--cream);line-height:0.9;">Ride Home RE</div>
+          <div style="font-family:var(--f-display);font-size:14px;text-transform:uppercase;color:var(--cream);line-height:0.9;">RIDE HOME RE</div>
+        </div>
+        <div class="logo-cap" style="color:rgba(242,240,234,.5);">Size Adaptations</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     04 · CONTENT STACK (v2)
+     ============================================= -->
+<section class="section" id="stack">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="04">Content Stack</div>
+    <h2 class="section-title">Three tiers.<br>One funnel.</h2>
+    <p class="section-intro">
+      Every post has exactly one job. Tier 1 gets you found by strangers. Tier 2 makes those strangers trust you. Tier 3 turns that trust into a client. Before you make anything, name its tier — if you can't, don't post it.
+    </p>
+
+    <div class="stack-grid">
+
+      <div class="tier-card t1">
+        <div class="tier-head">
+          <div class="tier-num">Tier 1 · 50% of posts</div>
+          <div class="tier-name">Discover&shy;ability</div>
+          <div class="tier-job">the content that gets you found</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-desc">Built for people who don't know you yet. Optimized for reach, shares, and the Bellingham algorithm — not for selling anything.</div>
+          <ul class="tier-list">
+            <li>Home tours — listings, dream homes, weird homes</li>
+            <li>B-roll of Bellingham life: Fairhaven, the bay, the trails</li>
+            <li>Neighborhood spotlights and local gems</li>
+            <li>Market stats people screenshot and share</li>
+          </ul>
+          <div class="tier-foot">Job: reach people who don't know you</div>
+        </div>
+      </div>
+
+      <div class="tier-card t2">
+        <div class="tier-head">
+          <div class="tier-num">Tier 2 · 30% of posts</div>
+          <div class="tier-name">Likability</div>
+          <div class="tier-job">the content that makes people trust you</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-desc">For people who found you and stuck around. They trust your take before they ever need an agent — so when they do, you're the obvious call.</div>
+          <ul class="tier-list">
+            <li>Your perspective — takes, opinions, "there, I said it"</li>
+            <li>Behind the scenes of the actual job</li>
+            <li>Client stories and wins, told like a neighbor would</li>
+            <li>The stuff that makes people feel like they know you</li>
+          </ul>
+          <div class="tier-foot">Job: make strangers feel like friends</div>
+        </div>
+      </div>
+
+      <div class="tier-card t3">
+        <div class="tier-head">
+          <div class="tier-num">Tier 3 · 20% of posts</div>
+          <div class="tier-name">Con<span>version</span></div>
+          <div class="tier-job">the content that turns attention into clients</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-desc">For people who are actually in the game — buying, selling, or about to be. Specific, searchable, and saveable. This is where DMs come from.</div>
+          <ul class="tier-list">
+            <li>The questions buyers are scared to ask</li>
+            <li>Searchable answers: "here's exactly what to do"</li>
+            <li>"Stuck? Here's the part nobody tells you"</li>
+            <li>Lead-gen plays, guides, and checklists</li>
+          </ul>
+          <div class="tier-foot">Job: give people a reason to DM you</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div>
+      <div style="font-family:var(--f-body);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);margin-bottom:10px;">Content Mix</div>
+      <div class="mix-strip">
+        <div class="mx-t1">Tier 1 · 50%</div>
+        <div class="mx-t2">Tier 2 · 30%</div>
+        <div class="mx-t3">T3 · 20%</div>
+      </div>
+      <p class="usage-note">
+        Over any two weeks, about half your posts should be Tier 1, a third Tier 2, the rest Tier 3. If everything is Tier 3, you look like an ad. If everything is Tier 1, you're famous and broke. <strong>The mix is the strategy.</strong>
+      </p>
+    </div>
+
+    <div class="stack-callout">
+      <h3>The local influencer play is all <span>Tier 1</span></h3>
+      <p>
+        Tours, B-roll, neighborhood love — that's how you become "the Bellingham guy" people see everywhere. But reach alone never becomes a closing. <strong>Tier 1 fills the room. Tier 2 makes them like you. Tier 3 hands them the pen.</strong> Run all three, every single week.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     05 · POST FORMULA
+     ============================================= -->
+<section class="section" id="formula">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="05">Post Formula</div>
+    <h2 class="section-title">How every<br>post is built.</h2>
+    <p class="section-intro">
+      Every post you make should follow this four-layer system. It's what makes Will Draper's content instantly recognizable, and it'll do the same for you.
+    </p>
+
+    <div class="formula-bar">
+      <h3>The 4-Layer Stack</h3>
+      <div class="formula-steps">
+        <div class="fstep">
+          <div class="fstep-n">01</div>
+          <div class="fstep-t">Anchor Surface</div>
+          <div class="fstep-d">Plum, deep plum, cream, or ink. Sets the tone. No photos unless they're high-contrast with a dark overlay.</div>
+        </div>
+        <div class="fstep">
+          <div class="fstep-n">02</div>
+          <div class="fstep-t">Headline</div>
+          <div class="fstep-d">Anton, ALL CAPS, stacked tight. 4–8 words max. Line-height 0.9. No punctuation on the last line.</div>
+        </div>
+        <div class="fstep">
+          <div class="fstep-n">03</div>
+          <div class="fstep-t">Green Highlight</div>
+          <div class="fstep-d">Exactly one word gets the green. Underline, box highlight, or color swap. One word. That's the rule.</div>
+        </div>
+        <div class="fstep">
+          <div class="fstep-n">04</div>
+          <div class="fstep-t">Handmade Detail</div>
+          <div class="fstep-d">Caveat script tag, hand-drawn arrow, or doodle house. Adds humanity. Keeps it from looking like a template.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     06 · 14 INSTAGRAM POSTS
+     ============================================= -->
+<section class="section" id="posts">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="06">14 Posts · 14 Days</div>
+    <h2 class="section-title">Your first two<br>weeks covered.</h2>
+    <p class="section-intro">
+      One post per day for 14 days, in order. Every post is tagged with its tier so you can see the stack at work — heavier on Tier 3 than your ongoing mix, because a launch needs to tell people what you do. Each layout is a Canva template brief — recreate these exactly and you have your system.
+    </p>
+
+    <!-- WEEK 1 -->
+    <div class="posts-label" style="margin-bottom:10px;">
+      <span class="day">Week 1 · Days 1–7</span> — Establish, educate, connect
+    </div>
+    <div class="ig-grid">
+
+      <!-- DAY 1: Start Here -->
+      <div>
+        <div class="posts-label"><span class="day">Day 1</span> · Pinned Intro<span class="tier-pill tp2">Tier 2</span></div>
+        <div class="ig-post bg-plum glow">
+          <div class="day-badge">Day 1</div>
+          <div>
+            <div class="p-eyebrow">New here?</div>
+            <svg style="width:24px;height:16px;margin:6px 0;" viewBox="0 0 24 16"><path d="M2 8 Q10 2, 20 8" stroke="#BFE35D" stroke-width="2" fill="none" stroke-linecap="round"/><polyline points="15,4 20,8 15,12" stroke="#BFE35D" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="p-head" style="font-size:32px;">START<br><span class="p-accent">HERE</span></div>
+            <div class="p-sub">I'm Mike. Bellingham realtor, local obsessive, zero-pressure guide.</div>
+          </div>
+          <div class="p-handle">@ridehomerealestate</div>
+        </div>
+      </div>
+
+      <!-- DAY 2: Bold Question -->
+      <div>
+        <div class="posts-label"><span class="day">Day 2</span> · Bold Hook<span class="tier-pill tp3">Tier 3</span></div>
+        <div class="ig-post bg-cream">
+          <div class="day-badge">Day 2</div>
+          <div class="p-eyebrow">Bellingham sellers</div>
+          <div>
+            <div class="p-head" style="color:var(--plum);">WANT TO<br>SELL YOUR <span class="p-hl">HOME?</span></div>
+            <div class="p-sub" style="color:var(--stone);">Swipe for 3 things to do before you list →</div>
+          </div>
+          <svg viewBox="0 0 60 24" style="width:40px;" fill="none"><path d="M2 14 Q20 4, 48 14" stroke="#452C4A" stroke-width="2" stroke-linecap="round"/><polyline points="42,8 48,14 42,20" stroke="#452C4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <!-- DAY 3: Lead Gen Play -->
+      <div>
+        <div class="posts-label"><span class="day">Day 3</span> · Lead Gen Play<span class="tier-pill tp3">Tier 3</span></div>
+        <div class="ig-post bg-deep stripe">
+          <div class="day-badge">Day 3</div>
+          <div>
+            <div class="p-eyebrow" style="color:var(--green);">Lead gen play #01</div>
+            <div class="p-head" style="font-size:22px;margin-top:6px;">"THE BUYER<br><span class="p-accent">LETTER"</span></div>
+          </div>
+          <div>
+            <div class="p-sub">How to market 'I have a buyer' to get more listings</div>
+            <div class="p-save" style="margin-top:8px;">Save this ↓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DAY 4: Market Stat -->
+      <div>
+        <div class="posts-label"><span class="day">Day 4</span> · Market Stat<span class="tier-pill tp1">Tier 1</span></div>
+        <div class="ig-post bg-plum">
+          <div class="day-badge">Day 4</div>
+          <div>
+            <div class="p-eyebrow">Bellingham market · May 2026</div>
+          </div>
+          <div>
+            <div class="p-num">$642K</div>
+            <div class="p-head" style="font-size:18px;">Median<br>sale price</div>
+            <div class="p-sub">Up 4.1% from last month. Here's what that means for you →</div>
+          </div>
+          <div class="p-handle">@ridehomerealestate</div>
+        </div>
+      </div>
+
+      <!-- DAY 5: Quote / Story -->
+      <div>
+        <div class="posts-label"><span class="day">Day 5</span> · Client Story<span class="tier-pill tp2">Tier 2</span></div>
+        <div class="ig-post bg-ink">
+          <div class="day-badge">Day 5</div>
+          <div style="font-family:var(--f-display);font-size:40px;color:var(--green);line-height:0.7;">"</div>
+          <div>
+            <div class="p-head" style="font-family:var(--f-body);text-transform:none;font-size:13px;font-weight:500;line-height:1.4;color:var(--cream);">I can't believe how smooth the whole thing was. We were under contract in <span style="color:var(--green);font-weight:700;">8 days.</span></div>
+            <div class="p-sub" style="margin-top:10px;">— First-time buyer, Lettered Streets, 2025</div>
+          </div>
+          <div class="p-handle">@ridehomerealestate</div>
+        </div>
+      </div>
+
+      <!-- DAY 6: Buyer Tip -->
+      <div>
+        <div class="posts-label"><span class="day">Day 6</span> · Buyer Tip<span class="tier-pill tp3">Tier 3</span></div>
+        <div class="ig-post bg-cream">
+          <div class="day-badge">Day 6</div>
+          <div class="p-eyebrow" style="color:var(--stone);">For first-time buyers</div>
+          <div>
+            <div class="p-head" style="color:var(--plum);">THE WALK-<br>THRU <span class="p-hl">TRICK</span></div>
+            <div class="p-sub" style="color:var(--stone);">One question to ask at every showing that most buyers never think of</div>
+          </div>
+          <div class="p-script" style="color:var(--plum);">save this →</div>
+        </div>
+      </div>
+
+      <!-- DAY 7: Seller Tip -->
+      <div>
+        <div class="posts-label"><span class="day">Day 7</span> · Seller Tip<span class="tier-pill tp3">Tier 3</span></div>
+        <div class="ig-post bg-plum">
+          <div class="day-badge">Day 7</div>
+          <div class="p-eyebrow" style="color:var(--green);">Sellers — read this</div>
+          <div>
+            <div class="p-head">DON'T LIST<br>ON A <span class="p-accent">FRIDAY</span></div>
+            <div class="p-sub">Here's the best day to hit the market in Bellingham (and why it matters)</div>
+          </div>
+          <div class="p-handle">@ridehomerealestate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 2 -->
+    <div class="posts-label" style="margin-bottom:10px;margin-top:32px;">
+      <span class="day">Week 2 · Days 8–14</span> — Listings, local love, authority
+    </div>
+    <div class="ig-grid">
+
+      <!-- DAY 8: Just Listed -->
+      <div>
+        <div class="posts-label"><span class="day">Day 8</span> · Just Listed<span class="tier-pill tp1">Tier 1</span></div>
+        <div class="ig-post bg-deep glow">
+          <div class="day-badge">Day 8</div>
+          <div>
+            <div class="p-eyebrow" style="color:var(--green);">Just listed · Fairhaven</div>
+          </div>
+          <div>
+            <div class="p-head">A 1920s<br><span class="p-accent">CRAFTSMAN</span></div>
+            <div class="p-sub">$685K · 3 bed · 2 bath · 1,840 sqft</div>
+          </div>
+          <div class="p-save">Book a showing ↗</div>
+        </div>
+      </div>
+
+      <!-- DAY 9: I Have a Buyer -->
+      <div>
+        <div class="posts-label"><span class="day">Day 9</span> · I Have a Buyer<span class="tier-pill tp3">Tier 3</span></div>
+        <div class="ig-post bg-green">
+          <div class="day-badge">Day 9</div>
+          <div>
+            <div class="p-eyebrow">Off-market opportunity</div>
+          </div>
+          <div>
+            <div class="p-head" style="color:var(--ink);">I HAVE A<br>BUYER FOR<br>YOUR HOME</div>
+          </div>
+          <div style="font-family:var(--f-script);font-size:14px;color:var(--plum);">DM me before you list →</div>
+        </div>
+      </div>
+
+      <!-- DAY 10: Local Love -->
+      <div>
+        <div class="posts-label"><span class="day">Day 10</span> · Local Love<span class="tier-pill tp1">Tier 1</span></div>
+        <div class="ig-post bg-plum stripe">
+          <div class="day-badge">Day 10</div>
+          <div>
+            <div class="p-eyebrow" style="color:var(--green);">Why I love Bellingham</div>
+          </div>
+          <div>
+            <div class="p-head">FAIRHAVEN<br>IS<span class="p-accent"> SPECIAL</span></div>
+            <div class="p-sub">3 things about this neighborhood that most agents won't tell you</div>
+          </div>
+          <div class="p-handle">@ridehomerealestate</div>
+        </div>
+      </div>
+
+      <!-- DAY 11: Bold Claim / Counter-opinion -->
+      <div>
+        <div class="posts-label"><span class="day">Day 11</span> · Bold Take<span class="tier-pill tp2">Tier 2</span></div>
+        <div class="ig-post bg-ink">
+          <div class="day-badge">Day 11</div>
+          <div>
+            <div class="p-eyebrow">Unpopular opinion</div>
+          </div>
+          <div>
+            <div class="p-head">STAGING<br>IS <span class="p-accent">OVER</span>RATED</div>
+            <div class="p-sub">There. I said it. Here's what actually moves the needle in 2026.</div>
+          </div>
+          <svg viewBox="0 0 50 20" style="width:32px;" fill="none"><path d="M2 12 Q16 4, 38 12" stroke="#BFE35D" stroke-width="2" stroke-linecap="round"/><polyline points="32,6 38,12 32,18" stroke="#BFE35D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <!-- DAY 12: Process Carousel Cover -->
+      <div>
+        <div class="posts-label"><span class="day">Day 12</span> · Carousel Cover<span class="tier-pill tp3">Tier 3</span></div>
+        <div class="ig-post bg-cream">
+          <div class="day-badge">Day 12</div>
+          <div class="p-eyebrow" style="color:var(--stone);">Swipe for the full guide</div>
+          <div>
+            <div class="p-num" style="color:var(--plum);">5</div>
+            <div class="p-head" style="color:var(--plum);">STEPS TO<br><span class="p-hl">CLOSE</span> FAST</div>
+          </div>
+          <div class="p-script" style="color:var(--plum);">the checklist →</div>
+        </div>
+      </div>
+
+      <!-- DAY 13: Reels / Video Cover -->
+      <div>
+        <div class="posts-label"><span class="day">Day 13</span> · Video / Reels<span class="tier-pill tp1">Tier 1</span></div>
+        <div class="ig-post bg-deep glow stripe">
+          <div class="day-badge">Day 13</div>
+          <div>
+            <svg viewBox="0 0 32 32" style="width:24px;height:24px;color:var(--cream);opacity:.6;" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="14"/><polygon points="13,11 23,16 13,21" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <div>
+            <div class="p-head">THE BEST<br>BELLINGHAM<br>VIDEO <span class="p-accent">THIS WEEK</span></div>
+          </div>
+          <div class="p-handle">@ridehomerealestate</div>
+        </div>
+      </div>
+
+      <!-- DAY 14: Week Wrap / Market Update -->
+      <div>
+        <div class="posts-label"><span class="day">Day 14</span> · Weekly Recap<span class="tier-pill tp1">Tier 1</span></div>
+        <div class="ig-post bg-plum">
+          <div class="day-badge">Day 14</div>
+          <div>
+            <div class="p-eyebrow" style="color:var(--green);">Weekly market update</div>
+          </div>
+          <div>
+            <div class="p-head">WEEK IN<br>BELLINGHAM<br><span class="p-accent">RE</span></div>
+            <div class="p-sub">Listings · prices · what sold this week</div>
+          </div>
+          <div class="p-script" style="color:rgba(242,240,234,.6);">every Sunday →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPTION GUIDE -->
+    <div style="background:var(--cream-warm);border-radius:16px;padding:32px;border:1px solid var(--rule);margin-top:32px;">
+      <div style="font-family:var(--f-body);font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--plum);margin-bottom:20px;">Caption formula for each post type</div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:8px;color:var(--plum);">Education / Tip posts (Days 6, 7, 12)</div>
+          <div style="font-size:13px;line-height:1.7;color:var(--ink);">
+            Line 1: Hook — the counter-intuitive claim<br>
+            Line 2–3: The insight in 2 sentences max<br>
+            Line 4: CTA — "Save this" or "Comment below"<br>
+            Line 5: 3–5 hashtags
+          </div>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:8px;color:var(--plum);">Market / Stat posts (Days 4, 14)</div>
+          <div style="font-size:13px;line-height:1.7;color:var(--ink);">
+            Line 1: The number, bold<br>
+            Line 2: What it means for buyers<br>
+            Line 3: What it means for sellers<br>
+            Line 4: "DM me to talk strategy"
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     06 · VOICE & TONE
+     ============================================= -->
+<section class="section" id="voice">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="07">Voice &amp; Tone</div>
+    <h2 class="section-title">Sound like<br>Mike.</h2>
+    <p class="section-intro">
+      Not a corporation. Not a brochure. A confident neighbor who knows the market cold — and happens to be great at explaining it.
+    </p>
+
+    <div class="voice-grid">
+      <div class="voice-card">
+        <div class="voice-pair">
+          <span class="voice-yes">Direct</span>
+          <span class="voice-no">Vague</span>
+        </div>
+        <div class="voice-desc">"List on a Tuesday, not a Friday" beats "timing is important in real estate." Always give the specific answer.</div>
+      </div>
+      <div class="voice-card">
+        <div class="voice-pair">
+          <span class="voice-yes">Local</span>
+          <span class="voice-no">Generic</span>
+        </div>
+        <div class="voice-desc">Name the neighborhood. Name the street type. "A craftsman in Sehome" lands 10× harder than "a charming home."</div>
+      </div>
+      <div class="voice-card">
+        <div class="voice-pair">
+          <span class="voice-yes">Honest</span>
+          <span class="voice-no">Hypey</span>
+        </div>
+        <div class="voice-desc">No "HOT MARKET!!!" Real estate is the biggest purchase most people make. Sound like someone worth trusting with it.</div>
+      </div>
+      <div class="voice-card">
+        <div class="voice-pair">
+          <span class="voice-yes">Short</span>
+          <span class="voice-no">Long</span>
+        </div>
+        <div class="voice-desc">Headlines: 4–8 words. Captions: 4–6 lines. If you can cut a word, cut it. Tighter copy reads as more confident.</div>
+      </div>
+      <div class="voice-card">
+        <div class="voice-pair">
+          <span class="voice-yes">Warm</span>
+          <span class="voice-no">Stiff</span>
+        </div>
+        <div class="voice-desc">You're a person, not a company. "I" not "we." "Mike" not "our team." The warmth is what makes people DM you.</div>
+      </div>
+      <div class="voice-card">
+        <div class="voice-pair">
+          <span class="voice-yes">Bellingham</span>
+          <span class="voice-no">Anywhere</span>
+        </div>
+        <div class="voice-desc">Reference real places: Fairhaven, Lettered Streets, Sehome, Whatcom Falls. This is what no out-of-town agent can copy.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     07 · DO / DON'T
+     ============================================= -->
+<section class="section" id="rules">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="08">Rules</div>
+    <h2 class="section-title">Do this.<br>Not that.</h2>
+    <p class="section-intro">
+      Keep this open every time you open Canva.
+    </p>
+
+    <div class="rules-grid">
+      <div class="rule-card do">
+        <div class="rule-head"><span class="rule-badge">DO</span> Always</div>
+        <ul class="rule-list">
+          <li>Use Anton (or Archivo Black as backup) for every single headline</li>
+          <li>Stack headlines tight — line-height 0.9, ALL CAPS, no exceptions</li>
+          <li>Highlight exactly one word per post with the green</li>
+          <li>Keep plum as 50%+ of every composition's real estate</li>
+          <li>Add a Caveat tag or hand-drawn arrow to every post for humanity</li>
+          <li>Sign posts @ridehomerealestate in the lower corner</li>
+          <li>Lead with Bellingham-specific information</li>
+          <li>Use the word "I" — you're a person, not a brand</li>
+        </ul>
+      </div>
+      <div class="rule-card dont">
+        <div class="rule-head"><span class="rule-badge">DON'T</span> Ever</div>
+        <ul class="rule-list">
+          <li>Use script or serif fonts for headlines — kills the confidence</li>
+          <li>Make green the dominant color — it loses all its power</li>
+          <li>Highlight more than one word in green per post</li>
+          <li>Use generic "just listed" Canva templates with blue/white</li>
+          <li>Mix more than 2 fonts in any single post</li>
+          <li>Add drop shadows, glow effects, or gradients on the headline text</li>
+          <li>Write a headline longer than 8 words</li>
+          <li>Use "we", "our team", or "at Ride Home Real Estate, we believe"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     08 · CANVA SETUP
+     ============================================= -->
+<section class="section" id="canva">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="09">Canva Setup</div>
+    <h2 class="section-title">Your brand<br>kit settings.</h2>
+    <p class="section-intro">
+      Copy these exact values into your Canva Brand Kit. Once it's set up, every template auto-populates with the right colors and fonts.
+    </p>
+
+    <div class="canva-block">
+      <h3>Canva Brand Kit · Exact Values</h3>
+      <div class="canva-grid">
+        <div class="canva-col">
+          <h4>Brand Colors — add in this order</h4>
+          <ul>
+            <li><strong style="color:rgba(198,242,78,1);">#452C4A</strong> · Ride Plum (primary)</li>
+            <li><strong style="color:rgba(198,242,78,1);">#BFE35D</strong> · Ride Green (accent)</li>
+            <li><strong style="color:rgba(198,242,78,1);">#F2F0EA</strong> · Cream (canvas)</li>
+            <li><strong style="color:rgba(198,242,78,1);">#261829</strong> · Deep Plum (dark bg)</li>
+            <li><strong style="color:rgba(198,242,78,1);">#1A0F14</strong> · Ink (text)</li>
+            <li><strong style="color:rgba(198,242,78,1);">#8A7D85</strong> · Stone (muted text)</li>
+          </ul>
+        </div>
+        <div class="canva-col">
+          <h4>Brand Fonts — set in order</h4>
+          <ul>
+            <li>Heading font: <strong style="color:rgba(198,242,78,1);">Anton</strong> (upload or use Google Fonts)</li>
+            <li>Sub-heading: <strong style="color:rgba(198,242,78,1);">Inter</strong>, weight 700</li>
+            <li>Body: <strong style="color:rgba(198,242,78,1);">Inter</strong>, weight 400</li>
+            <li>Accent: <strong style="color:rgba(198,242,78,1);">Caveat</strong> (for script moments only)</li>
+            <li>Set heading color default to #452C4A</li>
+            <li>Set body color default to #1A0F14</li>
+          </ul>
+        </div>
+        <div class="canva-col">
+          <h4>Templates to build first</h4>
+          <ul>
+            <li>1080×1080 — Post · Plum background</li>
+            <li>1080×1080 — Post · Cream background</li>
+            <li>1080×1080 — Post · Deep Plum background</li>
+            <li>1080×1920 — Story (same 3 variants)</li>
+            <li>1080×1080 — Listing card template</li>
+            <li>1080×1080 — Market stat template</li>
+          </ul>
+        </div>
+        <div class="canva-col">
+          <h4>File naming convention</h4>
+          <ul>
+            <li>RH_Post_Plum_[PostType]</li>
+            <li>RH_Post_Cream_[PostType]</li>
+            <li>RH_Story_[PostType]</li>
+            <li>RH_Listing_[Address]</li>
+            <li>RH_Stat_[Month]</li>
+            <li>RH_Carousel_[Topic]_Slide[N]</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     09 · 90-DAY ROLLOUT
+     ============================================= -->
+<section class="section" id="rollout">
+  <div class="page-wrap">
+    <div class="section-eyebrow" data-n="10">Rollout Plan</div>
+    <h2 class="section-title">90 days to<br>a new brand.</h2>
+    <p class="section-intro">
+      Don't do everything in one weekend. This sequence gets you the highest-visibility wins first and builds into the full system.
+    </p>
+
+    <div class="rollout-grid">
+      <div class="rollout-card">
+        <div class="rollout-days">30</div>
+        <div class="rollout-phase">Days · Foundations</div>
+        <ul class="rollout-list">
+          <li>Set up Canva brand kit with exact values above</li>
+          <li>Build the 6 core post templates (3 IG, 3 Story)</li>
+          <li>Update IG bio, profile photo, highlight covers</li>
+          <li>Update email signature with new wordmark</li>
+          <li>Post 14-day launch series (templates above)</li>
+          <li>Add plum + green to website header and CTAs</li>
+        </ul>
+      </div>
+      <div class="rollout-card">
+        <div class="rollout-days">60</div>
+        <div class="rollout-phase">Days · Content Engine</div>
+        <ul class="rollout-list">
+          <li>Post 3×/week in the 50/30/20 tier mix</li>
+          <li>Create "Start Here" highlight on IG profile</li>
+          <li>Build listing card template for new listings</li>
+          <li>Batch-film a month of Tier 1 tours + B-roll in one day</li>
+          <li>Refresh buyer/seller guide cover pages</li>
+          <li>Update Google Business profile images</li>
+        </ul>
+      </div>
+      <div class="rollout-card">
+        <div class="rollout-days">90</div>
+        <div class="rollout-phase">Days · Full Rollout</div>
+        <ul class="rollout-list">
+          <li>Full website redesign with new palette + fonts</li>
+          <li>New yard signs and business cards</li>
+          <li>Video intro/outro bumpers in Plum + Green</li>
+          <li>Print collateral: postcards, buyer/seller folders</li>
+          <li>LinkedIn profile and banner refresh</li>
+          <li>Review which tier is driving DMs — adjust the mix</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     FOOTER
+     ============================================= -->
+<footer class="brand-footer">
+  <h2>Ride Home<br>Real Estate</h2>
+  <div class="tagline">your route home starts here</div>
+  <div class="meta">Brand Book v2.0 · Bellingham, WA · 2026 · Built for Mike Augustine · eXp Realty</div>
+</footer>
+
+</body>
+</html>

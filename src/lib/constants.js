@@ -25,3 +25,11 @@ export const EXPENSE_CATEGORIES = [
   'Tools/Software',
   'Other',
 ]
+
+// Static brand book HTML documents, served from /public, keyed by workspace id.
+export const BRAND_BOOKS = {
+  'ride-home-re': {
+    label: 'Brand Book',
+    src: '/brand-books/ride-home-re.html',
+  },
+}
