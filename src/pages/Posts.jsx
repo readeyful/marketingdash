@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link2, Plus, Search } from 'lucide-react'
+import { LayoutGrid, Link2, List, Plus, Search } from 'lucide-react'
 import PostFormModal from '../components/PostFormModal'
 import StatCard from '../components/StatCard'
 import { useWorkspace } from '../context/workspace-context'
@@ -55,6 +55,38 @@ function StatusPill({ status }) {
   )
 }
 
+function PostCard({ post, onClick }) {
+  const Icon = PLATFORM_ICONS[post.platform]
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex cursor-pointer flex-col gap-3 rounded-2xl p-4 text-left transition hover:-translate-y-0.5"
+      style={{ backgroundColor: CARD_BG }}
+    >
+      <div className="flex items-center justify-between">
+        <Icon size={18} style={{ color: INK_MUTED }} />
+        <StatusPill status={post.status} />
+      </div>
+      <h3 className="font-display text-lg" style={{ color: INK }}>
+        {post.title || 'Untitled post'}
+      </h3>
+      {(post.caption || post.notes) && (
+        <p className="line-clamp-3 text-sm" style={{ color: INK_MUTED }}>
+          {post.caption || post.notes}
+        </p>
+      )}
+      <div
+        className="mt-auto flex items-center justify-between border-t border-(--border-soft) pt-3 text-xs"
+        style={{ color: INK_MUTED }}
+      >
+        <span>Scheduled: {formatDate(post.scheduledDate)}</span>
+        <span>Edited {formatDateTime(post.updatedAt)}</span>
+      </div>
+    </button>
+  )
+}
+
 function PostsList({ workspaceId }) {
   const [posts, setPosts] = useState(() => getPosts(workspaceId))
   const [search, setSearch] = useState('')
@@ -63,6 +95,7 @@ function PostsList({ workspaceId }) {
   const [editingPost, setEditingPost] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [ideaLink, setIdeaLink] = useState('')
+  const [view, setView] = useState('table')
 
   const filteredPosts = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -225,24 +258,49 @@ function PostsList({ workspaceId }) {
           <Plus size={16} />
           Add Post
         </button>
+
+        <div className="flex rounded-full p-1" style={{ backgroundColor: CARD_BG }}>
+          {[
+            { id: 'table', icon: List, label: 'Table view' },
+            { id: 'cards', icon: LayoutGrid, label: 'Card view' },
+          ].map(({ id, icon: Icon, label }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setView(id)}
+              aria-label={label}
+              title={label}
+              className="rounded-full p-1.5 transition"
+              style={{
+                backgroundColor: view === id ? ACCENT_SOLID_BG : 'transparent',
+                color: view === id ? ACCENT_SOLID_TEXT : INK_MUTED,
+              }}
+            >
+              <Icon size={16} />
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div
-        className="mt-6 overflow-hidden rounded-2xl"
-        style={{ backgroundColor: CARD_BG }}
-      >
-        {filteredPosts.length === 0 ? (
-          <div className="p-12 text-center">
-            <p className="font-display text-2xl" style={{ color: INK }}>
-              No posts yet
-            </p>
-            <p className="mx-auto mt-2 max-w-md text-sm" style={{ color: INK_MUTED }}>
-              {posts.length === 0
-                ? 'Add your first post to start building your library.'
-                : 'No posts match your search or filters.'}
-            </p>
-          </div>
-        ) : (
+      {filteredPosts.length === 0 ? (
+        <div className="mt-6 rounded-2xl p-12 text-center" style={{ backgroundColor: CARD_BG }}>
+          <p className="font-display text-2xl" style={{ color: INK }}>
+            No posts yet
+          </p>
+          <p className="mx-auto mt-2 max-w-md text-sm" style={{ color: INK_MUTED }}>
+            {posts.length === 0
+              ? 'Add your first post to start building your library.'
+              : 'No posts match your search or filters.'}
+          </p>
+        </div>
+      ) : view === 'cards' ? (
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredPosts.map((post) => (
+            <PostCard key={post.id} post={post} onClick={() => openEditPost(post)} />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-6 overflow-hidden rounded-2xl" style={{ backgroundColor: CARD_BG }}>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
@@ -284,8 +342,8 @@ function PostsList({ workspaceId }) {
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <PostFormModal
         key={editingPost?.id ?? 'new'}
