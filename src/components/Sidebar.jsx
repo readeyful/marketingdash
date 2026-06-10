@@ -1,0 +1,106 @@
+import { NavLink, useNavigate } from 'react-router-dom'
+import { ArrowLeftRight, Calendar, FileText, DollarSign, BookOpen } from 'lucide-react'
+import { useWorkspace } from '../context/workspace-context'
+import { getHeadingFont } from '../lib/theme'
+
+const NAV_ITEMS = [
+  { to: '/calendar', label: 'Calendar', icon: Calendar },
+  { to: '/posts', label: 'Posts', icon: FileText },
+  { to: '/finances', label: 'Finances', icon: DollarSign },
+  { to: '/strategy', label: 'Strategy', icon: BookOpen },
+]
+
+export default function Sidebar() {
+  const { activeWorkspace } = useWorkspace()
+  const navigate = useNavigate()
+
+  if (!activeWorkspace) return null
+
+  const { brandColor, accentColor } = activeWorkspace
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside
+        className="hidden h-screen w-60 shrink-0 flex-col justify-between p-4 md:flex"
+        style={{ backgroundColor: brandColor }}
+      >
+        <div>
+          <div className="mb-8 flex items-center justify-between gap-2 px-2 pt-2">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: accentColor }}
+              />
+              <span
+                className="truncate text-lg text-white"
+                style={{ fontFamily: getHeadingFont(activeWorkspace.id) }}
+              >
+                {activeWorkspace.name}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              title="Switch workspace"
+              aria-label="Switch workspace"
+              className="shrink-0 rounded-md p-1.5 text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <ArrowLeftRight size={16} />
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-1">
+            {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    isActive
+                      ? 'text-[var(--brand-color)]'
+                      : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  }`
+                }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive ? accentColor : 'transparent',
+                  '--brand-color': brandColor,
+                })}
+              >
+                <Icon size={18} />
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      {/* Mobile bottom nav */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-10 flex justify-around border-t border-black/10 p-2 md:hidden"
+        style={{ backgroundColor: brandColor }}
+      >
+        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                isActive
+                  ? 'text-[var(--brand-color)]'
+                  : 'text-white/70 hover:text-white'
+              }`
+            }
+            style={({ isActive }) => ({
+              backgroundColor: isActive ? accentColor : 'transparent',
+              '--brand-color': brandColor,
+            })}
+          >
+            <Icon size={18} />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
+    </>
+  )
+}
