@@ -1,14 +1,18 @@
 import { useLocation } from 'react-router-dom'
 import { Bell, HelpCircle, Settings } from 'lucide-react'
 import { NAV_ITEMS } from '../lib/nav'
+import { INK_MUTED, SIDEBAR_COLOR } from '../lib/theme'
 
 export default function TopBar() {
   const location = useLocation()
   const current = NAV_ITEMS.find((item) => item.to === location.pathname)
 
   return (
-    <header className="hidden items-center justify-between border-b border-black/5 px-6 py-4 md:flex md:px-8">
-      <span className="text-sm font-medium text-gray-400">
+    <header
+      className="hidden items-center justify-between border-b border-black/5 px-6 py-4 md:flex md:px-8"
+      style={{ backgroundColor: SIDEBAR_COLOR }}
+    >
+      <span className="text-sm font-medium" style={{ color: INK_MUTED }}>
         {current?.label ?? ''}
       </span>
       <div className="flex items-center gap-1.5">
@@ -16,7 +20,8 @@ export default function TopBar() {
           <button
             key={i}
             type="button"
-            className="rounded-full p-2 text-gray-400 transition hover:bg-black/5 hover:text-[#1A1A1A]"
+            className="rounded-full p-2 transition hover:bg-black/5 hover:text-[#2B211C]"
+            style={{ color: INK_MUTED }}
           >
             <Icon size={18} />
           </button>

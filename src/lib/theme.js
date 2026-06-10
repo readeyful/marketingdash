@@ -3,5 +3,11 @@
 // for the small workspace identifier dot) but no longer drive the
 // app's surface colors or fonts.
 
-export const SIDEBAR_COLOR = '#1A1A1A'
-export const ACCENT_COLOR = '#1A1A1A'
+export const PAGE_BG = '#FAF9F6'
+export const CARD_BG = '#F4F2EE'
+export const SIDEBAR_COLOR = '#FFFFFF'
+export const INK = '#2B211C'
+export const INK_MUTED = '#9C958A'
+export const ACCENT_COLOR = INK
+
+export const STAT_ACCENTS = ['#2B211C', '#D7E654', '#86B6D8', '#E8884A']

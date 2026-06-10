@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { ArrowLeftRight } from 'lucide-react'
 import { useWorkspace } from '../context/workspace-context'
-import { SIDEBAR_COLOR } from '../lib/theme'
+import { SIDEBAR_COLOR, INK, INK_MUTED, CARD_BG } from '../lib/theme'
 import { NAV_ITEMS } from '../lib/nav'
 
 export default function Sidebar() {
@@ -16,7 +16,7 @@ export default function Sidebar() {
     <>
       {/* Desktop sidebar */}
       <aside
-        className="hidden h-screen w-60 shrink-0 flex-col justify-between p-4 md:flex"
+        className="hidden h-screen w-60 shrink-0 flex-col justify-between border-r border-black/5 p-4 md:flex"
         style={{ backgroundColor: SIDEBAR_COLOR }}
       >
         <div>
@@ -26,7 +26,10 @@ export default function Sidebar() {
                 className="h-2.5 w-2.5 shrink-0 rounded-full"
                 style={{ backgroundColor: accentColor }}
               />
-              <span className="truncate text-lg text-white">
+              <span
+                className="truncate text-lg font-medium"
+                style={{ color: INK }}
+              >
                 {activeWorkspace.name}
               </span>
             </div>
@@ -35,7 +38,8 @@ export default function Sidebar() {
               onClick={() => navigate('/')}
               title="Switch workspace"
               aria-label="Switch workspace"
-              className="shrink-0 rounded-md p-1.5 text-white/70 transition hover:bg-white/10 hover:text-white"
+              className="shrink-0 rounded-md p-1.5 transition hover:bg-black/5"
+              style={{ color: INK_MUTED }}
             >
               <ArrowLeftRight size={16} />
             </button>
@@ -48,11 +52,13 @@ export default function Sidebar() {
                 to={to}
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                    isActive
-                      ? 'bg-white/10 text-white'
-                      : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    isActive ? '' : 'hover:bg-black/5'
                   }`
                 }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive ? CARD_BG : 'transparent',
+                  color: isActive ? INK : INK_MUTED,
+                })}
               >
                 <Icon size={18} />
                 {label}
@@ -71,13 +77,11 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
-            className={({ isActive }) =>
-              `flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-                isActive
-                  ? 'bg-white/10 text-white'
-                  : 'text-white/70 hover:text-white'
-              }`
-            }
+            className="flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition"
+            style={({ isActive }) => ({
+              backgroundColor: isActive ? CARD_BG : 'transparent',
+              color: isActive ? INK : INK_MUTED,
+            })}
           >
             <Icon size={18} />
             {label}
