@@ -5,7 +5,15 @@ import StatCard from '../components/StatCard'
 import { useWorkspace } from '../context/workspace-context'
 import { PLATFORM_ICONS, PLATFORMS, POST_STATUSES, STATUS_COLORS } from '../lib/constants'
 import { deletePost, getPosts, savePost } from '../lib/storage'
-import { CARD_BG, INK, INK_MUTED, INPUT_CLASS, STAT_ACCENTS } from '../lib/theme'
+import {
+  ACCENT_SOLID_BG,
+  ACCENT_SOLID_TEXT,
+  CARD_BG,
+  INK,
+  INK_MUTED,
+  INPUT_CLASS,
+  STAT_ACCENTS,
+} from '../lib/theme'
 
 function formatDate(dateString) {
   if (!dateString) return '—'
@@ -165,8 +173,8 @@ function PostsList({ workspaceId }) {
         <button
           type="button"
           onClick={openNewPost}
-          className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
-          style={{ backgroundColor: INK }}
+          className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition hover:opacity-90"
+          style={{ backgroundColor: ACCENT_SOLID_BG, color: ACCENT_SOLID_TEXT }}
         >
           <Plus size={16} />
           Add Post
@@ -207,7 +215,7 @@ function PostsList({ workspaceId }) {
                     <tr
                       key={post.id}
                       onClick={() => openEditPost(post)}
-                      className="cursor-pointer border-t border-black/5 transition hover:bg-black/5"
+                      className="cursor-pointer border-t border-(--border-soft) transition hover:bg-(--border-soft)"
                     >
                       <td className="px-5 py-3 font-medium" style={{ color: INK }}>
                         {post.title || 'Untitled post'}

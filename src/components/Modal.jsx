@@ -22,7 +22,7 @@ export default function Modal({ open, onClose, title, children }) {
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded-lg p-1.5 transition hover:bg-black/5"
+            className="rounded-lg p-1.5 transition hover:bg-(--border-soft)"
             style={{ color: INK_MUTED }}
           >
             <X size={18} />

@@ -13,7 +13,7 @@ import {
 import { useWorkspace } from '../context/workspace-context'
 import { BRAND_BOOKS } from '../lib/constants'
 import { getStrategy, saveStrategy } from '../lib/storage'
-import { CARD_BG, INK, INK_MUTED } from '../lib/theme'
+import { ACCENT_SOLID_BG, ACCENT_SOLID_TEXT, CARD_BG, INK, INK_MUTED } from '../lib/theme'
 
 const AUTOSAVE_INTERVAL = 30000
 
@@ -24,7 +24,7 @@ function ToolbarButton({ onClick, isActive, label, children }) {
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="rounded-lg p-2 transition hover:bg-black/5"
+      className="rounded-lg p-2 transition hover:bg-(--border-soft)"
       style={{
         color: isActive ? INK : INK_MUTED,
         backgroundColor: isActive ? CARD_BG : 'transparent',
@@ -81,7 +81,7 @@ function StrategyEditor({ workspaceId }) {
         className="mt-8 rounded-2xl p-2 sm:p-6"
         style={{ backgroundColor: CARD_BG }}
       >
-        <div className="mb-4 flex flex-wrap items-center gap-1 border-b border-black/5 pb-3">
+        <div className="mb-4 flex flex-wrap items-center gap-1 border-b border-(--border-soft) pb-3">
           <ToolbarButton
             label="Heading 1"
             isActive={editor.isActive('heading', { level: 1 })}
@@ -148,7 +148,7 @@ function BrandBookView({ src, label }) {
       className="mt-8 overflow-hidden rounded-2xl"
       style={{ backgroundColor: CARD_BG }}
     >
-      <div className="flex items-center justify-between border-b border-black/5 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-(--border-soft) px-4 py-3">
         <span className="text-sm font-medium" style={{ color: INK_MUTED }}>
           {label}
         </span>
@@ -156,7 +156,7 @@ function BrandBookView({ src, label }) {
           href={src}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition hover:bg-black/5"
+          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition hover:bg-(--border-soft)"
           style={{ color: INK }}
         >
           <ExternalLink size={14} />
@@ -190,8 +190,8 @@ function StrategyContent({ workspaceId }) {
               onClick={() => setActiveTab(tab.id)}
               className="rounded-full px-4 py-1.5 text-sm font-medium transition"
               style={{
-                backgroundColor: activeTab === tab.id ? INK : 'transparent',
-                color: activeTab === tab.id ? '#FFFFFF' : INK_MUTED,
+                backgroundColor: activeTab === tab.id ? ACCENT_SOLID_BG : 'transparent',
+                color: activeTab === tab.id ? ACCENT_SOLID_TEXT : INK_MUTED,
               }}
             >
               {tab.label}

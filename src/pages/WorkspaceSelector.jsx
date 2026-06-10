@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useWorkspace } from '../context/workspace-context'
-import { CARD_BG, INK, INK_MUTED, PAGE_BG } from '../lib/theme'
+import { ACCENT_SOLID_BG, ACCENT_SOLID_TEXT, CARD_BG, INK, INK_MUTED, PAGE_BG } from '../lib/theme'
 
 export default function WorkspaceSelector() {
   const { workspaces, selectWorkspace } = useWorkspace()
@@ -39,8 +39,8 @@ export default function WorkspaceSelector() {
               {workspace.name}
             </span>
             <span
-              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white"
-              style={{ backgroundColor: INK }}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
+              style={{ backgroundColor: ACCENT_SOLID_BG, color: ACCENT_SOLID_TEXT }}
             >
               Enter workspace
             </span>

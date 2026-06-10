@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { EXPENSE_CATEGORIES, EXPENSE_PLATFORMS } from '../lib/constants'
-import { INK, INK_MUTED, INPUT_CLASS, LABEL_CLASS } from '../lib/theme'
+import { ACCENT_SOLID_BG, ACCENT_SOLID_TEXT, INK_MUTED, INPUT_CLASS, LABEL_CLASS } from '../lib/theme'
 import Modal from './Modal'
 
 function todayString() {
@@ -139,15 +139,15 @@ export default function ExpenseFormModal({ open, onClose, onSave, onDelete, expe
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full px-4 py-2 text-sm font-medium transition hover:bg-black/5"
+              className="rounded-full px-4 py-2 text-sm font-medium transition hover:bg-(--border-soft)"
               style={{ color: INK_MUTED }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
-              style={{ backgroundColor: INK }}
+              className="rounded-full px-4 py-2 text-sm font-medium transition hover:opacity-90"
+              style={{ backgroundColor: ACCENT_SOLID_BG, color: ACCENT_SOLID_TEXT }}
             >
               Save
             </button>

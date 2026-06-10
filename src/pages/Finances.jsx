@@ -5,7 +5,17 @@ import StatCard from '../components/StatCard'
 import { useWorkspace } from '../context/workspace-context'
 import { PLATFORM_ICONS } from '../lib/constants'
 import { deleteExpense, getExpenses, saveExpense } from '../lib/storage'
-import { CARD_BG, INK, INK_MUTED, INPUT_CLASS, LABEL_CLASS, STAT_ACCENTS } from '../lib/theme'
+import {
+  ACCENT_SOLID_BG,
+  ACCENT_SOLID_TEXT,
+  CARD_BG,
+  INK,
+  INK_MUTED,
+  INPUT_CLASS,
+  LABEL_CLASS,
+  PAGE_BG,
+  STAT_ACCENTS,
+} from '../lib/theme'
 
 function todayDate() {
   return new Date()
@@ -211,7 +221,7 @@ function FinancesView({ workspaceId }) {
                     <span>{platform}</span>
                     <span>{formatCurrency(amount)}</span>
                   </div>
-                  <div className="h-2 w-full rounded-full" style={{ backgroundColor: '#FFFFFF' }}>
+                  <div className="h-2 w-full rounded-full" style={{ backgroundColor: PAGE_BG }}>
                     <div
                       className="h-2 rounded-full"
                       style={{
@@ -254,7 +264,7 @@ function FinancesView({ workspaceId }) {
           <button
             type="button"
             onClick={handleExport}
-            className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition hover:bg-black/5"
+            className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition hover:bg-(--border-soft)"
             style={{ color: INK, backgroundColor: CARD_BG }}
           >
             <Download size={16} />
@@ -265,8 +275,8 @@ function FinancesView({ workspaceId }) {
         <button
           type="button"
           onClick={openNewExpense}
-          className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
-          style={{ backgroundColor: INK }}
+          className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition hover:opacity-90"
+          style={{ backgroundColor: ACCENT_SOLID_BG, color: ACCENT_SOLID_TEXT }}
         >
           <Plus size={16} />
           Add Expense
@@ -302,7 +312,7 @@ function FinancesView({ workspaceId }) {
                     <tr
                       key={expense.id}
                       onClick={() => openEditExpense(expense)}
-                      className="cursor-pointer border-t border-black/5 transition hover:bg-black/5"
+                      className="cursor-pointer border-t border-(--border-soft) transition hover:bg-(--border-soft)"
                     >
                       <td className="px-5 py-3" style={{ color: INK_MUTED }}>
                         {formatDate(expense.date)}

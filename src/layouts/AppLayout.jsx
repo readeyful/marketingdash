@@ -18,7 +18,7 @@ export default function AppLayout() {
 
       {/* Mobile header */}
       <header
-        className="flex items-center justify-between border-b border-black/5 p-4 md:hidden"
+        className="flex items-center justify-between border-b border-(--border-soft) p-4 md:hidden"
         style={{ backgroundColor: SIDEBAR_COLOR }}
       >
         <div className="flex items-center gap-2">
@@ -35,7 +35,7 @@ export default function AppLayout() {
           onClick={() => navigate('/')}
           title="Switch workspace"
           aria-label="Switch workspace"
-          className="rounded-md p-1.5 transition hover:bg-black/5"
+          className="rounded-md p-1.5 transition hover:bg-(--border-soft)"
           style={{ color: INK_MUTED }}
         >
           <ArrowLeftRight size={16} />

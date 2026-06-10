@@ -16,7 +16,7 @@ export default function Sidebar() {
     <>
       {/* Desktop sidebar */}
       <aside
-        className="hidden h-screen w-60 shrink-0 flex-col justify-between border-r border-black/5 p-4 md:flex"
+        className="hidden h-screen w-60 shrink-0 flex-col justify-between border-r border-(--border-soft) p-4 md:flex"
         style={{ backgroundColor: SIDEBAR_COLOR }}
       >
         <div>
@@ -38,7 +38,7 @@ export default function Sidebar() {
               onClick={() => navigate('/')}
               title="Switch workspace"
               aria-label="Switch workspace"
-              className="shrink-0 rounded-md p-1.5 transition hover:bg-black/5"
+              className="shrink-0 rounded-md p-1.5 transition hover:bg-(--border-soft)"
               style={{ color: INK_MUTED }}
             >
               <ArrowLeftRight size={16} />
@@ -52,7 +52,7 @@ export default function Sidebar() {
                 to={to}
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                    isActive ? '' : 'hover:bg-black/5'
+                    isActive ? '' : 'hover:bg-(--border-soft)'
                   }`
                 }
                 style={({ isActive }) => ({
@@ -70,7 +70,7 @@ export default function Sidebar() {
 
       {/* Mobile bottom nav */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-10 flex justify-around border-t border-black/10 p-2 md:hidden"
+        className="fixed inset-x-0 bottom-0 z-10 flex justify-around border-t border-(--border-strong) p-2 md:hidden"
         style={{ backgroundColor: SIDEBAR_COLOR }}
       >
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (

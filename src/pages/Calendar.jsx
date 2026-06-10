@@ -4,7 +4,15 @@ import PostFormModal from '../components/PostFormModal'
 import { useWorkspace } from '../context/workspace-context'
 import { PLATFORM_ICONS, PLATFORMS, POST_STATUSES, STATUS_COLORS } from '../lib/constants'
 import { deletePost, getPosts, savePost } from '../lib/storage'
-import { CARD_BG, INK, INK_MUTED, INPUT_CLASS, PAGE_BG } from '../lib/theme'
+import {
+  ACCENT_SOLID_BG,
+  ACCENT_SOLID_TEXT,
+  CARD_BG,
+  INK,
+  INK_MUTED,
+  INPUT_CLASS,
+  PAGE_BG,
+} from '../lib/theme'
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MAX_VISIBLE_POSTS = 3
@@ -55,7 +63,7 @@ function PostChip({ post, onClick }) {
         e.stopPropagation()
         onClick(post)
       }}
-      className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-left text-xs transition hover:bg-black/5"
+      className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-left text-xs transition hover:bg-(--border-soft)"
       style={{ color: INK }}
     >
       <span
@@ -76,7 +84,7 @@ function DayCell({ day, isCurrentMonth, isToday, posts, onSelectDay, onSelectPos
     <button
       type="button"
       onClick={() => onSelectDay(day)}
-      className="flex min-h-[6rem] flex-col items-stretch gap-1 rounded-xl p-2 text-left transition hover:bg-black/5 sm:min-h-[8rem]"
+      className="flex min-h-[6rem] flex-col items-stretch gap-1 rounded-xl p-2 text-left transition hover:bg-(--border-soft) sm:min-h-[8rem]"
       style={{
         backgroundColor: isCurrentMonth ? PAGE_BG : CARD_BG,
         opacity: isCurrentMonth ? 1 : 0.5,
@@ -85,8 +93,8 @@ function DayCell({ day, isCurrentMonth, isToday, posts, onSelectDay, onSelectPos
       <span
         className="text-xs font-medium"
         style={{
-          color: isToday ? '#FFFFFF' : INK_MUTED,
-          backgroundColor: isToday ? INK : 'transparent',
+          color: isToday ? ACCENT_SOLID_TEXT : INK_MUTED,
+          backgroundColor: isToday ? ACCENT_SOLID_BG : 'transparent',
           borderRadius: '999px',
           width: '1.5rem',
           height: '1.5rem',
@@ -211,7 +219,7 @@ function CalendarView({ workspaceId }) {
             type="button"
             onClick={() => navigate(-1)}
             aria-label="Previous"
-            className="rounded-full p-2 transition hover:bg-black/5"
+            className="rounded-full p-2 transition hover:bg-(--border-soft)"
             style={{ color: INK_MUTED }}
           >
             <ChevronLeft size={18} />
@@ -223,7 +231,7 @@ function CalendarView({ workspaceId }) {
             type="button"
             onClick={() => navigate(1)}
             aria-label="Next"
-            className="rounded-full p-2 transition hover:bg-black/5"
+            className="rounded-full p-2 transition hover:bg-(--border-soft)"
             style={{ color: INK_MUTED }}
           >
             <ChevronRight size={18} />
@@ -231,7 +239,7 @@ function CalendarView({ workspaceId }) {
           <button
             type="button"
             onClick={() => setReferenceDate(new Date())}
-            className="ml-1 rounded-full px-3 py-1.5 text-xs font-medium transition hover:bg-black/5"
+            className="ml-1 rounded-full px-3 py-1.5 text-xs font-medium transition hover:bg-(--border-soft)"
             style={{ color: INK_MUTED, backgroundColor: CARD_BG }}
           >
             Today
@@ -273,8 +281,8 @@ function CalendarView({ workspaceId }) {
                 onClick={() => setView(option)}
                 className="rounded-full px-3 py-1.5 text-xs font-medium capitalize transition"
                 style={{
-                  backgroundColor: view === option ? INK : 'transparent',
-                  color: view === option ? '#FFFFFF' : INK_MUTED,
+                  backgroundColor: view === option ? ACCENT_SOLID_BG : 'transparent',
+                  color: view === option ? ACCENT_SOLID_TEXT : INK_MUTED,
                 }}
               >
                 {option}

@@ -8,6 +8,7 @@ const KEYS = {
   expenses: 'brandmark:expenses',
   strategy: 'brandmark:strategy',
   activeWorkspace: 'brandmark:activeWorkspace',
+  theme: 'brandmark:theme',
 }
 
 const DEFAULT_WORKSPACES = [
@@ -179,4 +180,16 @@ export function saveStrategy(workspaceId, content) {
   const all = readJSON(KEYS.strategy, {})
   all[workspaceId] = content
   writeJSON(KEYS.strategy, all)
+}
+
+// ---------------------------------------------------------------------------
+// Theme
+// ---------------------------------------------------------------------------
+
+export function getTheme() {
+  return readJSON(KEYS.theme, 'light')
+}
+
+export function setTheme(theme) {
+  writeJSON(KEYS.theme, theme)
 }
