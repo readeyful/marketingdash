@@ -1,9 +1,15 @@
 import { useMemo, useState } from 'react'
-import { Plus, Search } from 'lucide-react'
+import { Link2, Plus, Search } from 'lucide-react'
 import PostFormModal from '../components/PostFormModal'
 import StatCard from '../components/StatCard'
 import { useWorkspace } from '../context/workspace-context'
-import { PLATFORM_ICONS, PLATFORMS, POST_STATUSES, STATUS_COLORS } from '../lib/constants'
+import {
+  PLATFORM_ICONS,
+  PLATFORMS,
+  POST_STATUSES,
+  STATUS_COLORS,
+  detectPlatformFromUrl,
+} from '../lib/constants'
 import { deletePost, getPosts, savePost } from '../lib/storage'
 import {
   ACCENT_SOLID_BG,
@@ -56,6 +62,7 @@ function PostsList({ workspaceId }) {
   const [statusFilter, setStatusFilter] = useState('All')
   const [editingPost, setEditingPost] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [ideaLink, setIdeaLink] = useState('')
 
   const filteredPosts = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -115,6 +122,22 @@ function PostsList({ workspaceId }) {
     setModalOpen(false)
   }
 
+  function handleBankIdea(e) {
+    e.preventDefault()
+    const url = ideaLink.trim()
+    if (!url) return
+
+    const updated = savePost({
+      workspaceId,
+      title: '',
+      platform: detectPlatformFromUrl(url),
+      status: 'Idea',
+      notes: url,
+    })
+    setPosts(updated.filter((p) => p.workspaceId === workspaceId))
+    setIdeaLink('')
+  }
+
   return (
     <>
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -127,6 +150,29 @@ function PostsList({ workspaceId }) {
           />
         ))}
       </div>
+
+      <form
+        onSubmit={handleBankIdea}
+        className="mt-4 flex flex-wrap items-center gap-2 rounded-2xl p-4"
+        style={{ backgroundColor: CARD_BG }}
+      >
+        <Link2 size={18} style={{ color: INK_MUTED }} className="shrink-0" />
+        <input
+          type="url"
+          placeholder="Paste a link from Instagram (or anywhere) to bank it as an idea..."
+          value={ideaLink}
+          onChange={(e) => setIdeaLink(e.target.value)}
+          className={`${INPUT_CLASS} flex-1 min-w-[200px]`}
+        />
+        <button
+          type="submit"
+          disabled={!ideaLink.trim()}
+          className="rounded-full px-4 py-2 text-sm font-medium transition hover:opacity-90 disabled:opacity-40"
+          style={{ backgroundColor: ACCENT_SOLID_BG, color: ACCENT_SOLID_TEXT }}
+        >
+          Save idea
+        </button>
+      </form>
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[180px]">
