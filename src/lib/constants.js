@@ -26,6 +26,26 @@ export const PLATFORM_DOT_COLORS = {
   TikTok: '#000000',
 }
 
+export const CONTENT_PILLARS = [
+  'Education',
+  'Listing Feature',
+  'Local Guide',
+  'Lifestyle',
+  'Market Update',
+  'Personal',
+]
+
+export const AUDIENCES = ['Buyers', 'Sellers', 'Local Community', 'General']
+
+// Vault item source types: badge label + color per type.
+export const VAULT_TYPES = {
+  template: { label: 'TEMPLATE', color: '#8E5BA6' },
+  inspo: { label: 'INSPO', color: '#2D9C8F' },
+  candc: { label: 'C&C', color: '#8A8074' },
+}
+
+export const VAULT_SORTS = ['Newest', 'Oldest', 'A–Z', 'Most Used']
+
 export const EXPENSE_PLATFORMS = ['Instagram', 'Facebook', 'TikTok', 'Other']
 
 export const EXPENSE_CATEGORIES = [

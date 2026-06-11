@@ -10,6 +10,7 @@ const KEYS = {
   activeWorkspace: 'brandmark:activeWorkspace',
   theme: 'brandmark:theme',
   anthropicApiKey: 'brandmark:anthropicApiKey',
+  vault: 'brandmark:vault',
 }
 
 const DEFAULT_WORKSPACES = [
@@ -140,6 +141,119 @@ export function deletePost(postId) {
   const all = readJSON(KEYS.posts, []).filter((p) => p.id !== postId)
   writeJSON(KEYS.posts, all)
   return all
+}
+
+// ---------------------------------------------------------------------------
+// Vault
+// ---------------------------------------------------------------------------
+
+const NEW_ITEM_WINDOW_MS = 14 * 24 * 60 * 60 * 1000
+
+export function isVaultItemNew(item) {
+  return Date.now() - new Date(item.createdAt).getTime() < NEW_ITEM_WINDOW_MS
+}
+
+export function getVaultItems(workspaceId) {
+  const all = readJSON(KEYS.vault, [])
+  return workspaceId ? all.filter((v) => v.workspaceId === workspaceId) : all
+}
+
+export function saveVaultItem(item) {
+  const all = readJSON(KEYS.vault, [])
+  const now = new Date().toISOString()
+  const idx = all.findIndex((v) => v.id === item.id)
+
+  if (idx >= 0) {
+    all[idx] = { ...all[idx], ...item, updatedAt: now }
+  } else {
+    all.push({
+      type: 'template',
+      title: '',
+      format: null,
+      pillar: null,
+      audience: null,
+      platforms: [],
+      images: [],
+      caption: '',
+      notes: '',
+      postGoal: '',
+      postStrategy: '',
+      postTip: '',
+      sourceUrl: null,
+      candcName: null,
+      isFavorited: false,
+      scheduledPostIds: [],
+      ...item,
+      id: item.id ?? uuid(),
+      createdAt: now,
+      updatedAt: now,
+    })
+  }
+
+  writeJSON(KEYS.vault, all)
+  return all
+}
+
+export function duplicateVaultItem(itemId) {
+  const all = readJSON(KEYS.vault, [])
+  const source = all.find((v) => v.id === itemId)
+  if (!source) return all
+  return saveVaultItem({
+    ...source,
+    id: undefined,
+    title: `${source.title || 'Untitled'} (copy)`,
+    scheduledPostIds: [],
+    isFavorited: false,
+  })
+}
+
+export function deleteVaultItem(itemId) {
+  const all = readJSON(KEYS.vault, []).filter((v) => v.id !== itemId)
+  writeJSON(KEYS.vault, all)
+  return all
+}
+
+// Builds a vault item from a post banked via the Posts page link box
+// (status Idea with a URL in notes/sourceUrl).
+export function inspoPostToVaultItem(post, workspaceId) {
+  const url = (post.sourceUrl ?? post.notes ?? '').trim()
+  return {
+    workspaceId,
+    type: 'inspo',
+    title: post.title || url,
+    platforms: post.platform ? [post.platform] : [],
+    sourceUrl: url,
+    caption: post.caption ?? '',
+  }
+}
+
+// Creates a calendar post from a vault item and records the link back
+// on the vault item's scheduledPostIds.
+export function scheduleVaultItem(itemId, date) {
+  const item = readJSON(KEYS.vault, []).find((v) => v.id === itemId)
+  if (!item) return null
+
+  const posts = savePost({
+    workspaceId: item.workspaceId,
+    title: item.title,
+    platform: item.platforms[0] ?? 'Instagram',
+    status: 'Scheduled',
+    scheduledDate: date,
+    caption: item.caption,
+    notes: item.notes,
+    postType: item.format,
+    imageUrl: item.images[0] ?? null,
+    postGoal: item.postGoal,
+    postStrategy: item.postStrategy,
+    postTip: item.postTip,
+    sourceUrl: item.sourceUrl,
+  })
+  const newPost = posts[posts.length - 1]
+  saveVaultItem({
+    id: item.id,
+    scheduledPostIds: [...(item.scheduledPostIds ?? []), newPost.id],
+  })
+  return newPost
 }
 
 // ---------------------------------------------------------------------------

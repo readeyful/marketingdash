@@ -6,6 +6,7 @@ import WorkspaceSelector from './pages/WorkspaceSelector'
 import AppLayout from './layouts/AppLayout'
 import Calendar from './pages/Calendar'
 import Posts from './pages/Posts'
+import Vault from './pages/Vault'
 import Finances from './pages/Finances'
 import Strategy from './pages/Strategy'
 
@@ -33,6 +34,7 @@ export default function App() {
             >
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/posts" element={<Posts />} />
+              <Route path="/vault" element={<Vault />} />
               <Route path="/finances" element={<Finances />} />
               <Route path="/strategy" element={<Strategy />} />
             </Route>
