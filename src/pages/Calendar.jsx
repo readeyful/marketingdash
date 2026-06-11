@@ -1,8 +1,15 @@
 import { useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import PostDetailPanel from '../components/PostDetailPanel'
 import PostFormModal from '../components/PostFormModal'
 import { useWorkspace } from '../context/workspace-context'
-import { PLATFORM_ICONS, PLATFORMS, POST_STATUSES, STATUS_COLORS } from '../lib/constants'
+import {
+  PLATFORM_DOT_COLORS,
+  PLATFORM_ICONS,
+  PLATFORMS,
+  POST_STATUSES,
+  STATUS_COLORS,
+} from '../lib/constants'
 import { deletePost, getPosts, savePost } from '../lib/storage'
 import {
   ACCENT_SOLID_BG,
@@ -10,7 +17,6 @@ import {
   CARD_BG,
   INK,
   INK_MUTED,
-  INPUT_CLASS,
   PAGE_BG,
 } from '../lib/theme'
 
@@ -54,7 +60,28 @@ function getWeekDays(referenceDate) {
   return days
 }
 
-function PostChip({ post, onClick }) {
+function FilterPills({ options, value, onChange }) {
+  return (
+    <div className="flex flex-wrap gap-1 rounded-full p-1" style={{ backgroundColor: CARD_BG }}>
+      {['All', ...options].map((option) => (
+        <button
+          key={option}
+          type="button"
+          onClick={() => onChange(option)}
+          className="rounded-full px-3 py-1.5 text-xs font-medium transition"
+          style={{
+            backgroundColor: value === option ? ACCENT_SOLID_BG : 'transparent',
+            color: value === option ? ACCENT_SOLID_TEXT : INK_MUTED,
+          }}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function PostThumb({ post, isSelected, onClick, tall }) {
   const Icon = PLATFORM_ICONS[post.platform]
   return (
     <button
@@ -63,28 +90,63 @@ function PostChip({ post, onClick }) {
         e.stopPropagation()
         onClick(post)
       }}
-      className="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-left text-xs transition hover:bg-(--border-soft)"
-      style={{ color: INK }}
+      className="relative w-full cursor-pointer overflow-hidden rounded-lg text-left transition duration-100 hover:scale-[1.02] hover:shadow-md"
+      style={{
+        backgroundColor: PAGE_BG,
+        outline: isSelected ? `2px solid ${STATUS_COLORS[post.status]}` : 'none',
+      }}
     >
+      {post.imageUrl ? (
+        <img
+          src={post.imageUrl}
+          alt=""
+          className={`w-full object-cover ${tall ? 'h-24' : 'h-12'}`}
+        />
+      ) : (
+        <div
+          className={`flex w-full items-center justify-center ${tall ? 'h-24' : 'h-12'}`}
+          style={{ backgroundColor: CARD_BG, color: INK_MUTED }}
+        >
+          <Icon size={tall ? 22 : 16} />
+        </div>
+      )}
+      {/* Status dot — top right */}
       <span
-        className="h-1.5 w-1.5 shrink-0 rounded-full"
+        className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full ring-2 ring-white/70"
         style={{ backgroundColor: STATUS_COLORS[post.status] }}
       />
-      <Icon size={12} className="shrink-0" style={{ color: INK_MUTED }} />
-      <span className="truncate">{post.title || 'Untitled post'}</span>
+      <div className="flex items-center justify-between gap-1 px-1.5 py-1">
+        <span className="truncate text-[11px] font-medium" style={{ color: INK }}>
+          {post.title || 'Untitled'}
+        </span>
+        <span
+          className="h-1.5 w-1.5 shrink-0 rounded-full"
+          style={{ backgroundColor: PLATFORM_DOT_COLORS[post.platform] }}
+        />
+      </div>
     </button>
   )
 }
 
-function DayCell({ day, isCurrentMonth, isToday, posts, onSelectDay, onSelectPost, compact }) {
-  const visiblePosts = compact ? posts.slice(0, MAX_VISIBLE_POSTS) : posts
-  const overflow = compact ? posts.length - visiblePosts.length : 0
+function DayCell({
+  day,
+  isCurrentMonth,
+  isToday,
+  posts,
+  selectedPostId,
+  onSelectDay,
+  onSelectPost,
+  compact,
+}) {
+  const overflowing = compact && posts.length > MAX_VISIBLE_POSTS
+  const visiblePosts = overflowing ? posts.slice(0, 2) : posts
+  const overflow = posts.length - visiblePosts.length
 
   return (
     <button
       type="button"
       onClick={() => onSelectDay(day)}
-      className="flex min-h-[6rem] flex-col items-stretch gap-1 rounded-xl p-2 text-left transition hover:bg-(--border-soft) sm:min-h-[8rem]"
+      className="flex min-h-[6rem] flex-col items-stretch gap-1 rounded-xl p-1.5 text-left transition hover:bg-(--border-soft) sm:min-h-[8rem]"
       style={{
         backgroundColor: isCurrentMonth ? PAGE_BG : CARD_BG,
         opacity: isCurrentMonth ? 1 : 0.5,
@@ -106,12 +168,21 @@ function DayCell({ day, isCurrentMonth, isToday, posts, onSelectDay, onSelectPos
         {day.getDate()}
       </span>
 
-      <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-1">
         {visiblePosts.map((post) => (
-          <PostChip key={post.id} post={post} onClick={onSelectPost} />
+          <PostThumb
+            key={post.id}
+            post={post}
+            tall={!compact}
+            isSelected={post.id === selectedPostId}
+            onClick={onSelectPost}
+          />
         ))}
         {overflow > 0 && (
-          <span className="px-1.5 text-xs" style={{ color: INK_MUTED }}>
+          <span
+            className="rounded-full px-1.5 py-0.5 text-center text-[11px] font-medium"
+            style={{ backgroundColor: CARD_BG, color: INK_MUTED }}
+          >
             +{overflow} more
           </span>
         )}
@@ -129,6 +200,14 @@ function CalendarView({ workspaceId }) {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingPost, setEditingPost] = useState(null)
   const [defaultDate, setDefaultDate] = useState(null)
+  const [selectedPostId, setSelectedPostId] = useState(null)
+
+  const selectedPost = useMemo(
+    () => posts.find((p) => p.id === selectedPostId) ?? null,
+    [posts, selectedPostId],
+  )
+
+  const filtersActive = platformFilter !== 'All' || statusFilter !== 'All'
 
   const filteredPosts = useMemo(
     () =>
@@ -153,6 +232,13 @@ function CalendarView({ workspaceId }) {
     [view, referenceDate],
   )
 
+  const visiblePostCount = useMemo(() => {
+    const dayStrings = new Set(days.map(toDateString))
+    return filteredPosts.filter(
+      (p) => p.scheduledDate && dayStrings.has(p.scheduledDate),
+    ).length
+  }, [days, filteredPosts])
+
   const todayString = toDateString(new Date())
 
   function navigate(step) {
@@ -165,6 +251,10 @@ function CalendarView({ workspaceId }) {
       }
       return next
     })
+  }
+
+  function refresh(updatedAll) {
+    setPosts(updatedAll.filter((p) => p.workspaceId === workspaceId))
   }
 
   function openNewPost(day) {
@@ -180,18 +270,25 @@ function CalendarView({ workspaceId }) {
   }
 
   function handleSave(postData) {
-    const updated = savePost({
-      ...postData,
-      id: editingPost?.id,
-      workspaceId,
-    })
-    setPosts(updated.filter((p) => p.workspaceId === workspaceId))
+    refresh(
+      savePost({
+        ...postData,
+        id: editingPost?.id,
+        workspaceId,
+      }),
+    )
     setModalOpen(false)
   }
 
+  function handleUpdateSelected(updates) {
+    if (!selectedPost) return
+    refresh(savePost({ ...selectedPost, ...updates }))
+  }
+
   function handleDelete(postId) {
-    setPosts(deletePost(postId).filter((p) => p.workspaceId === workspaceId))
+    refresh(deletePost(postId))
     setModalOpen(false)
+    if (postId === selectedPostId) setSelectedPostId(null)
   }
 
   const heading =
@@ -211,9 +308,9 @@ function CalendarView({ workspaceId }) {
           return `${startLabel} – ${endLabel}`
         })()
 
-  return (
+  const calendarGrid = (
     <>
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -246,60 +343,37 @@ function CalendarView({ workspaceId }) {
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <select
-            className={`${INPUT_CLASS} w-auto`}
-            value={platformFilter}
-            onChange={(e) => setPlatformFilter(e.target.value)}
-          >
-            <option value="All">All platforms</option>
-            {PLATFORMS.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-
-          <select
-            className={`${INPUT_CLASS} w-auto`}
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="All">All statuses</option>
-            {POST_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-
-          <div className="flex rounded-full p-1" style={{ backgroundColor: CARD_BG }}>
-            {['month', 'week'].map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => setView(option)}
-                className="rounded-full px-3 py-1.5 text-xs font-medium capitalize transition"
-                style={{
-                  backgroundColor: view === option ? ACCENT_SOLID_BG : 'transparent',
-                  color: view === option ? ACCENT_SOLID_TEXT : INK_MUTED,
-                }}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
+        <div className="flex rounded-full p-1" style={{ backgroundColor: CARD_BG }}>
+          {['month', 'week'].map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setView(option)}
+              className="rounded-full px-3 py-1.5 text-xs font-medium capitalize transition"
+              style={{
+                backgroundColor: view === option ? ACCENT_SOLID_BG : 'transparent',
+                color: view === option ? ACCENT_SOLID_TEXT : INK_MUTED,
+              }}
+            >
+              {option}
+            </button>
+          ))}
         </div>
       </div>
 
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <FilterPills options={PLATFORMS} value={platformFilter} onChange={setPlatformFilter} />
+        <FilterPills options={POST_STATUSES} value={statusFilter} onChange={setStatusFilter} />
+      </div>
+
       <div
-        className="mt-6 grid grid-cols-7 gap-1 rounded-2xl p-2 sm:gap-2 sm:p-3"
+        className="relative mt-4 grid grid-cols-7 gap-1 rounded-2xl p-2 sm:gap-2 sm:p-3"
         style={{ backgroundColor: CARD_BG }}
       >
         {WEEKDAY_LABELS.map((label) => (
           <div
             key={label}
-            className="px-2 py-1 text-center text-xs font-medium"
+            className="px-2 py-1 text-center text-xs font-medium uppercase"
             style={{ color: INK_MUTED }}
           >
             {label}
@@ -315,13 +389,90 @@ function CalendarView({ workspaceId }) {
               isCurrentMonth={view === 'week' || day.getMonth() === referenceDate.getMonth()}
               isToday={dateString === todayString}
               posts={postsByDate[dateString] ?? []}
+              selectedPostId={selectedPostId}
               onSelectDay={openNewPost}
-              onSelectPost={openEditPost}
+              onSelectPost={(post) => setSelectedPostId(post.id)}
               compact={view === 'month'}
             />
           )
         })}
+
+        {visiblePostCount === 0 && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <p
+              className="rounded-full px-4 py-2 text-sm"
+              style={{ backgroundColor: PAGE_BG, color: INK_MUTED }}
+            >
+              {filtersActive ? (
+                <>
+                  No posts match your filters.{' '}
+                  <button
+                    type="button"
+                    className="pointer-events-auto font-medium underline"
+                    style={{ color: INK }}
+                    onClick={() => {
+                      setPlatformFilter('All')
+                      setStatusFilter('All')
+                    }}
+                  >
+                    Clear filters
+                  </button>
+                </>
+              ) : (
+                'Nothing scheduled this month. Click any day to add a post.'
+              )}
+            </p>
+          </div>
+        )}
       </div>
+    </>
+  )
+
+  return (
+    <>
+      <div className="flex gap-4">
+        <div className="min-w-0 flex-1">{calendarGrid}</div>
+
+        {/* Desktop detail panel */}
+        {selectedPost && (
+          <aside
+            className="sticky top-4 mt-6 hidden h-[85vh] w-[40%] max-w-md shrink-0 overflow-hidden rounded-2xl border border-(--border-soft) lg:block"
+            style={{ backgroundColor: PAGE_BG, animation: 'slide-in-right 0.2s ease-out' }}
+          >
+            <PostDetailPanel
+              key={selectedPost.id}
+              post={selectedPost}
+              onClose={() => setSelectedPostId(null)}
+              onUpdate={handleUpdateSelected}
+              onEdit={openEditPost}
+              onDelete={handleDelete}
+            />
+          </aside>
+        )}
+      </div>
+
+      {/* Mobile bottom sheet */}
+      {selectedPost && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          onClick={() => setSelectedPostId(null)}
+        >
+          <div
+            className="absolute inset-x-0 bottom-0 h-[75vh] overflow-hidden rounded-t-2xl"
+            style={{ backgroundColor: PAGE_BG, animation: 'slide-in-up 0.2s ease-out' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PostDetailPanel
+              key={selectedPost.id}
+              post={selectedPost}
+              onClose={() => setSelectedPostId(null)}
+              onUpdate={handleUpdateSelected}
+              onEdit={openEditPost}
+              onDelete={handleDelete}
+            />
+          </div>
+        </div>
+      )}
 
       <PostFormModal
         key={`${editingPost?.id ?? 'new'}-${defaultDate ?? ''}`}
@@ -331,6 +482,7 @@ function CalendarView({ workspaceId }) {
         onDelete={handleDelete}
         post={editingPost}
         defaultDate={defaultDate}
+        defaultStatus="Scheduled"
       />
     </>
   )

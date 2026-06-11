@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PLATFORMS, POST_STATUSES } from '../lib/constants'
+import { PLATFORMS, POST_STATUSES, POST_TYPES } from '../lib/constants'
 import { ACCENT_SOLID_BG, ACCENT_SOLID_TEXT, INK_MUTED, INPUT_CLASS, LABEL_CLASS } from '../lib/theme'
 import Modal from './Modal'
 
@@ -10,6 +10,17 @@ const EMPTY_POST = {
   scheduledDate: '',
   caption: '',
   notes: '',
+  postType: '',
+  imageUrl: null,
+}
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
 }
 
 export default function PostFormModal({
@@ -19,10 +30,12 @@ export default function PostFormModal({
   onDelete,
   post,
   defaultDate,
+  defaultStatus,
 }) {
   const [form, setForm] = useState(() => ({
     ...EMPTY_POST,
     scheduledDate: defaultDate ?? '',
+    status: defaultDate && defaultStatus ? defaultStatus : EMPTY_POST.status,
     ...post,
   }))
 
@@ -30,11 +43,18 @@ export default function PostFormModal({
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
+  async function handleImageChange(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    update('imageUrl', await readFileAsDataURL(file))
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
     onSave({
       ...form,
       scheduledDate: form.scheduledDate || null,
+      postType: form.postType || null,
     })
   }
 
@@ -90,16 +110,67 @@ export default function PostFormModal({
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={LABEL_CLASS} style={{ color: INK_MUTED }}>
+              Scheduled date
+            </label>
+            <input
+              type="date"
+              className={INPUT_CLASS}
+              value={form.scheduledDate ?? ''}
+              onChange={(e) => update('scheduledDate', e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className={LABEL_CLASS} style={{ color: INK_MUTED }}>
+              Post type
+            </label>
+            <select
+              className={INPUT_CLASS}
+              value={form.postType ?? ''}
+              onChange={(e) => update('postType', e.target.value)}
+            >
+              <option value="">—</option>
+              {POST_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <div>
           <label className={LABEL_CLASS} style={{ color: INK_MUTED }}>
-            Scheduled date
+            Image
           </label>
-          <input
-            type="date"
-            className={INPUT_CLASS}
-            value={form.scheduledDate ?? ''}
-            onChange={(e) => update('scheduledDate', e.target.value)}
-          />
+          {form.imageUrl ? (
+            <div className="flex items-center gap-3">
+              <img
+                src={form.imageUrl}
+                alt=""
+                className="h-16 w-16 rounded-lg object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => update('imageUrl', null)}
+                className="text-sm font-medium transition hover:opacity-70"
+                style={{ color: INK_MUTED }}
+              >
+                Remove image
+              </button>
+            </div>
+          ) : (
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="block w-full text-sm"
+              style={{ color: INK_MUTED }}
+            />
+          )}
         </div>
 
         <div>

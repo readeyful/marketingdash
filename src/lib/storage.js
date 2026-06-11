@@ -9,6 +9,7 @@ const KEYS = {
   strategy: 'brandmark:strategy',
   activeWorkspace: 'brandmark:activeWorkspace',
   theme: 'brandmark:theme',
+  anthropicApiKey: 'brandmark:anthropicApiKey',
 }
 
 const DEFAULT_WORKSPACES = [
@@ -117,6 +118,13 @@ export function savePost(post) {
       scheduledDate: null,
       caption: '',
       notes: '',
+      postType: null,
+      imageUrl: null,
+      postGoal: '',
+      postStrategy: '',
+      postTip: '',
+      sourceUrl: null,
+      isFavorited: false,
       ...post,
       id: post.id ?? uuid(),
       createdAt: now,
@@ -192,4 +200,17 @@ export function getTheme() {
 
 export function setTheme(theme) {
   writeJSON(KEYS.theme, theme)
+}
+
+// ---------------------------------------------------------------------------
+// Anthropic API key (for the AI caption generator — Phase 1 only; in Phase 2
+// this moves behind a serverless function so the key never lives in the browser)
+// ---------------------------------------------------------------------------
+
+export function getAnthropicApiKey() {
+  return readJSON(KEYS.anthropicApiKey, '')
+}
+
+export function setAnthropicApiKey(key) {
+  writeJSON(KEYS.anthropicApiKey, key)
 }

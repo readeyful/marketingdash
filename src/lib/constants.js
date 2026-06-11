@@ -11,10 +11,19 @@ export const PLATFORM_ICONS = {
 export const POST_STATUSES = ['Idea', 'Draft', 'Scheduled', 'Posted']
 
 export const STATUS_COLORS = {
-  Idea: '#9C958A',
-  Draft: '#E8C84A',
-  Scheduled: '#86B6D8',
-  Posted: '#7FB68A',
+  Idea: '#9CA3AF',
+  Draft: '#FBBF24',
+  Scheduled: '#3B82F6',
+  Posted: '#22C55E',
+}
+
+export const POST_TYPES = ['Carousel', 'Reel', 'Single Image', 'Story', 'Video']
+
+// Brand colors used for the small platform dot on calendar thumbnails.
+export const PLATFORM_DOT_COLORS = {
+  Instagram: '#E1306C',
+  Facebook: '#1877F2',
+  TikTok: '#000000',
 }
 
 export const EXPENSE_PLATFORMS = ['Instagram', 'Facebook', 'TikTok', 'Other']

@@ -45,6 +45,26 @@ body {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 .tiptap-content {
   color: var(--text-ink);
   line-height: 1.6;
