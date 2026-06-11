@@ -207,6 +207,14 @@ function CalendarView({ workspaceId }) {
     [posts, selectedPostId],
   )
 
+  // Keep the last-shown post around so the panel content stays visible
+  // while it slides out after closing.
+  const [lastPanelPost, setLastPanelPost] = useState(null)
+  if (selectedPost && selectedPost !== lastPanelPost) {
+    setLastPanelPost(selectedPost)
+  }
+  const panelPost = selectedPost ?? lastPanelPost
+
   const filtersActive = platformFilter !== 'All' || statusFilter !== 'All'
 
   const filteredPosts = useMemo(
@@ -430,18 +438,31 @@ function CalendarView({ workspaceId }) {
 
   return (
     <>
-      <div className="flex gap-4">
-        <div className="min-w-0 flex-1">{calendarGrid}</div>
+      <div className="relative">
+        <div
+          className={`min-w-0 transition-[width] duration-200 ease-out ${
+            selectedPost ? 'w-full lg:w-[60%]' : 'w-full'
+          }`}
+        >
+          {calendarGrid}
+        </div>
 
-        {/* Desktop detail panel */}
-        {selectedPost && (
+        {/* Desktop detail panel — overlays from the right while the calendar
+            compresses; both transition together at 200ms ease-out. */}
+        {panelPost && (
           <aside
-            className="sticky top-4 mt-6 hidden h-[85vh] w-[40%] max-w-md shrink-0 overflow-hidden rounded-2xl border border-(--border-soft) lg:block"
-            style={{ backgroundColor: PAGE_BG, animation: 'slide-in-right 0.2s ease-out' }}
+            className="absolute right-0 top-0 mt-6 hidden h-[85vh] w-[38%] max-w-md overflow-hidden rounded-2xl border border-(--border-soft) shadow-xl transition-[transform,opacity] duration-200 ease-out lg:block"
+            style={{
+              backgroundColor: PAGE_BG,
+              transform: selectedPost ? 'translateX(0)' : 'translateX(110%)',
+              opacity: selectedPost ? 1 : 0,
+              pointerEvents: selectedPost ? 'auto' : 'none',
+            }}
+            aria-hidden={!selectedPost}
           >
             <PostDetailPanel
-              key={selectedPost.id}
-              post={selectedPost}
+              key={panelPost.id}
+              post={panelPost}
               onClose={() => setSelectedPostId(null)}
               onUpdate={handleUpdateSelected}
               onEdit={openEditPost}
