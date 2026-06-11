@@ -439,23 +439,27 @@ function CalendarView({ workspaceId }) {
   return (
     <>
       <div className="relative">
-        <div
-          className={`min-w-0 transition-[width] duration-200 ease-out ${
-            selectedPost ? 'w-full lg:w-[60%]' : 'w-full'
-          }`}
-        >
-          {calendarGrid}
-        </div>
+        <div className="min-w-0">{calendarGrid}</div>
 
-        {/* Desktop detail panel — overlays from the right while the calendar
-            compresses; both transition together at 200ms ease-out. */}
+        {/* Backdrop — dims the calendar behind the overlay panel */}
+        <div
+          className="fixed inset-0 z-30 hidden bg-black/20 transition-opacity duration-200 ease-out lg:block"
+          style={{
+            opacity: selectedPost ? 1 : 0,
+            pointerEvents: selectedPost ? 'auto' : 'none',
+          }}
+          onClick={() => setSelectedPostId(null)}
+          aria-hidden={!selectedPost}
+        />
+
+        {/* Desktop detail panel — overlays on top of the calendar from the
+            right edge of the viewport, transitioning at 200ms ease-out. */}
         {panelPost && (
           <aside
-            className="absolute right-0 top-0 mt-6 hidden h-[85vh] w-[38%] max-w-md overflow-hidden rounded-2xl border border-(--border-soft) shadow-xl transition-[transform,opacity] duration-200 ease-out lg:block"
+            className="fixed right-0 top-0 z-40 hidden h-full w-[42%] max-w-xl overflow-hidden border-l border-(--border-soft) shadow-xl transition-transform duration-200 ease-out lg:block"
             style={{
               backgroundColor: PAGE_BG,
-              transform: selectedPost ? 'translateX(0)' : 'translateX(110%)',
-              opacity: selectedPost ? 1 : 0,
+              transform: selectedPost ? 'translateX(0)' : 'translateX(100%)',
               pointerEvents: selectedPost ? 'auto' : 'none',
             }}
             aria-hidden={!selectedPost}
