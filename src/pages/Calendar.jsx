@@ -21,7 +21,7 @@ import {
 } from '../lib/theme'
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const MAX_VISIBLE_POSTS = 3
+const MAX_VISIBLE_POSTS = 4
 const VIEW_OPTIONS = [
   { id: 'month', label: 'Month' },
   { id: 'twoWeek', label: '2 Weeks' },
@@ -155,14 +155,14 @@ function DayCell({
   compact,
 }) {
   const overflowing = compact && posts.length > MAX_VISIBLE_POSTS
-  const visiblePosts = overflowing ? posts.slice(0, 2) : posts
+  const visiblePosts = overflowing ? posts.slice(0, MAX_VISIBLE_POSTS - 1) : posts
   const overflow = posts.length - visiblePosts.length
 
   return (
     <button
       type="button"
       onClick={() => onSelectDay(day)}
-      className="flex min-h-[6rem] flex-col items-stretch gap-1 rounded-xl p-1.5 text-left transition hover:bg-(--border-soft) sm:min-h-[8rem]"
+      className="flex min-h-[8rem] flex-col items-stretch gap-1 rounded-xl p-1.5 text-left transition hover:bg-(--border-soft) sm:min-h-[11rem]"
       style={{
         backgroundColor: isCurrentMonth ? PAGE_BG : CARD_BG,
         opacity: isCurrentMonth ? 1 : 0.5,
