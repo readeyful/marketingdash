@@ -9,12 +9,13 @@ import {
   Users,
 } from 'lucide-react'
 
-export const PLATFORMS = ['Instagram', 'Facebook', 'TikTok']
+export const PLATFORMS = ['Instagram', 'Facebook', 'TikTok', 'Email']
 
 export const PLATFORM_ICONS = {
   Instagram: FaInstagram,
   Facebook: FaFacebook,
   TikTok: FaTiktok,
+  Email: Mail,
 }
 
 export const POST_TYPES = ['Carousel', 'Reel', 'Single Image', 'Story', 'Video']
@@ -24,6 +25,7 @@ export const PLATFORM_DOT_COLORS = {
   Instagram: '#E1306C',
   Facebook: '#1877F2',
   TikTok: '#000000',
+  Email: '#6B7280',
 }
 
 export const CONTENT_PILLARS = [
