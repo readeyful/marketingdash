@@ -22,6 +22,11 @@ import {
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MAX_VISIBLE_POSTS = 3
+const VIEW_OPTIONS = [
+  { id: 'month', label: 'Month' },
+  { id: 'twoWeek', label: '2 Weeks' },
+  { id: 'week', label: 'Week' },
+]
 
 function toDateString(date) {
   const y = date.getFullYear()
@@ -53,6 +58,17 @@ function getWeekDays(referenceDate) {
   const weekStart = startOfWeek(referenceDate)
   const days = []
   for (let i = 0; i < 7; i++) {
+    const day = new Date(weekStart)
+    day.setDate(weekStart.getDate() + i)
+    days.push(day)
+  }
+  return days
+}
+
+function getTwoWeekDays(referenceDate) {
+  const weekStart = startOfWeek(referenceDate)
+  const days = []
+  for (let i = 0; i < 14; i++) {
     const day = new Date(weekStart)
     day.setDate(weekStart.getDate() + i)
     days.push(day)
@@ -235,10 +251,11 @@ function CalendarView({ workspaceId }) {
     return map
   }, [filteredPosts])
 
-  const days = useMemo(
-    () => (view === 'month' ? getMonthGridDays(referenceDate) : getWeekDays(referenceDate)),
-    [view, referenceDate],
-  )
+  const days = useMemo(() => {
+    if (view === 'month') return getMonthGridDays(referenceDate)
+    if (view === 'twoWeek') return getTwoWeekDays(referenceDate)
+    return getWeekDays(referenceDate)
+  }, [view, referenceDate])
 
   const visiblePostCount = useMemo(() => {
     const dayStrings = new Set(days.map(toDateString))
@@ -254,6 +271,8 @@ function CalendarView({ workspaceId }) {
       const next = new Date(prev)
       if (view === 'month') {
         next.setMonth(next.getMonth() + step)
+      } else if (view === 'twoWeek') {
+        next.setDate(next.getDate() + step * 14)
       } else {
         next.setDate(next.getDate() + step * 7)
       }
@@ -303,9 +322,8 @@ function CalendarView({ workspaceId }) {
     view === 'month'
       ? referenceDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
       : (() => {
-          const week = getWeekDays(referenceDate)
-          const start = week[0]
-          const end = week[6]
+          const start = days[0]
+          const end = days[days.length - 1]
           const sameMonth = start.getMonth() === end.getMonth()
           const startLabel = start.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
           const endLabel = end.toLocaleDateString(undefined, {
@@ -352,18 +370,18 @@ function CalendarView({ workspaceId }) {
         </div>
 
         <div className="flex rounded-full p-1" style={{ backgroundColor: CARD_BG }}>
-          {['month', 'week'].map((option) => (
+          {VIEW_OPTIONS.map((option) => (
             <button
-              key={option}
+              key={option.id}
               type="button"
-              onClick={() => setView(option)}
-              className="rounded-full px-3 py-1.5 text-xs font-medium capitalize transition"
+              onClick={() => setView(option.id)}
+              className="rounded-full px-3 py-1.5 text-xs font-medium transition"
               style={{
-                backgroundColor: view === option ? ACCENT_SOLID_BG : 'transparent',
-                color: view === option ? ACCENT_SOLID_TEXT : INK_MUTED,
+                backgroundColor: view === option.id ? ACCENT_SOLID_BG : 'transparent',
+                color: view === option.id ? ACCENT_SOLID_TEXT : INK_MUTED,
               }}
             >
-              {option}
+              {option.label}
             </button>
           ))}
         </div>
@@ -394,13 +412,13 @@ function CalendarView({ workspaceId }) {
             <DayCell
               key={dateString}
               day={day}
-              isCurrentMonth={view === 'week' || day.getMonth() === referenceDate.getMonth()}
+              isCurrentMonth={view !== 'month' || day.getMonth() === referenceDate.getMonth()}
               isToday={dateString === todayString}
               posts={postsByDate[dateString] ?? []}
               selectedPostId={selectedPostId}
               onSelectDay={openNewPost}
               onSelectPost={(post) => setSelectedPostId(post.id)}
-              compact={view === 'month'}
+              compact={view !== 'week'}
             />
           )
         })}
@@ -427,7 +445,9 @@ function CalendarView({ workspaceId }) {
                   </button>
                 </>
               ) : (
-                'Nothing scheduled this month. Click any day to add a post.'
+                `Nothing scheduled this ${
+                  view === 'month' ? 'month' : view === 'twoWeek' ? 'period' : 'week'
+                }. Click any day to add a post.`
               )}
             </p>
           </div>
