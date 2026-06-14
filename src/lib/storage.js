@@ -11,6 +11,7 @@ const KEYS = {
   theme: 'brandmark:theme',
   anthropicApiKey: 'brandmark:anthropicApiKey',
   vault: 'brandmark:vault',
+  activities: 'brandmark:activities',
 }
 
 const DEFAULT_WORKSPACES = [
@@ -253,6 +254,47 @@ export function scheduleVaultItem(itemId, date) {
     scheduledPostIds: [...(item.scheduledPostIds ?? []), newPost.id],
   })
   return newPost
+}
+
+// ---------------------------------------------------------------------------
+// Activities
+// ---------------------------------------------------------------------------
+
+export function getActivities(workspaceId) {
+  const all = readJSON(KEYS.activities, [])
+  return workspaceId ? all.filter((a) => a.workspaceId === workspaceId) : all
+}
+
+export function saveActivity(activity) {
+  const all = readJSON(KEYS.activities, [])
+  const now = new Date().toISOString()
+  const idx = all.findIndex((a) => a.id === activity.id)
+
+  if (idx >= 0) {
+    all[idx] = { ...all[idx], ...activity, updatedAt: now }
+  } else {
+    all.push({
+      title: '',
+      type: 'Other',
+      date: null,
+      startTime: null,
+      endTime: null,
+      note: null,
+      ...activity,
+      id: activity.id ?? uuid(),
+      createdAt: now,
+      updatedAt: now,
+    })
+  }
+
+  writeJSON(KEYS.activities, all)
+  return all
+}
+
+export function deleteActivity(activityId) {
+  const all = readJSON(KEYS.activities, []).filter((a) => a.id !== activityId)
+  writeJSON(KEYS.activities, all)
+  return all
 }
 
 // ---------------------------------------------------------------------------

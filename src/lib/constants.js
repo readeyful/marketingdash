@@ -1,4 +1,13 @@
 import { FaFacebook, FaInstagram, FaTiktok } from 'react-icons/fa'
+import {
+  Clipboard,
+  Home,
+  Mail,
+  MapPin,
+  MoreHorizontal,
+  Phone,
+  Users,
+} from 'lucide-react'
 
 export const PLATFORMS = ['Instagram', 'Facebook', 'TikTok']
 
@@ -58,6 +67,34 @@ export function detectPlatformFromUrl(url) {
     // Not a valid URL — fall through to default.
   }
   return 'Instagram'
+}
+
+// Calendar activity types — flat colored blocks distinct from post thumbnails.
+export const ACTIVITY_TYPES = {
+  'Open House': { icon: Home, bg: '#FFF8E6', border: '#EFD080', text: '#7A5A00' },
+  'Door Knocking': { icon: MapPin, bg: '#FFF0EC', border: '#F5B8A0', text: '#8B3A1A' },
+  'Cold Calls': { icon: Phone, bg: '#EAF5F0', border: '#7DC9A8', text: '#0F6E56' },
+  'Client Meeting': { icon: Users, bg: '#EEF2FF', border: '#B0BFFF', text: '#2D3A9A' },
+  'Follow-ups': { icon: Mail, bg: '#F5F0FF', border: '#C4AAEE', text: '#5A2D9A' },
+  Admin: { icon: Clipboard, bg: '#F3F4F6', border: '#D1D5DB', text: '#4B5563' },
+  Other: { icon: MoreHorizontal, bg: '#F9F9F9', border: '#E0E0E0', text: '#6B7280' },
+}
+
+export const ACTIVITY_TYPE_OPTIONS = Object.keys(ACTIVITY_TYPES)
+
+// Formats a 'HH:MM' time string as a compact 12-hour label, e.g. '13:00' -> '1pm'.
+export function formatActivityTime(time) {
+  const [h, m] = time.split(':').map(Number)
+  const period = h >= 12 ? 'pm' : 'am'
+  const hour12 = h % 12 === 0 ? 12 : h % 12
+  return m === 0 ? `${hour12}${period}` : `${hour12}:${String(m).padStart(2, '0')}${period}`
+}
+
+// Formats an activity's time range for display, e.g. '1pm – 4pm' or 'from 1pm'.
+export function formatActivityTimeRange(startTime, endTime) {
+  if (!startTime) return ''
+  if (!endTime) return `from ${formatActivityTime(startTime)}`
+  return `${formatActivityTime(startTime)} – ${formatActivityTime(endTime)}`
 }
 
 // Static brand book HTML documents, served from /public, keyed by workspace id.

@@ -1,14 +1,26 @@
 import { useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import ActivityFormModal from '../components/ActivityFormModal'
+import ActivityPopover from '../components/ActivityPopover'
+import AddChoiceModal from '../components/AddChoiceModal'
 import PostDetailPanel from '../components/PostDetailPanel'
 import PostFormModal from '../components/PostFormModal'
 import { useWorkspace } from '../context/workspace-context'
 import {
+  ACTIVITY_TYPES,
   PLATFORM_DOT_COLORS,
   PLATFORM_ICONS,
   PLATFORMS,
+  formatActivityTimeRange,
 } from '../lib/constants'
-import { deletePost, getPosts, savePost } from '../lib/storage'
+import {
+  deleteActivity,
+  deletePost,
+  getActivities,
+  getPosts,
+  savePost,
+  saveActivity,
+} from '../lib/storage'
 import {
   ACCENT_SOLID_BG,
   ACCENT_SOLID_TEXT,
@@ -19,12 +31,13 @@ import {
 } from '../lib/theme'
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const MAX_VISIBLE_POSTS = 4
+const MAX_VISIBLE_ITEMS = 4
 const VIEW_OPTIONS = [
   { id: 'month', label: 'Month' },
   { id: 'twoWeek', label: '2 Weeks' },
   { id: 'week', label: 'Week' },
 ]
+const TYPE_FILTER_OPTIONS = ['Both', 'Posts', 'Activities']
 
 function toDateString(date) {
   const y = date.getFullYear()
@@ -137,56 +150,115 @@ function PostThumb({ post, isSelected, onClick, tall }) {
   )
 }
 
+function ActivityBlock({ activity, onClick }) {
+  const config = ACTIVITY_TYPES[activity.type] ?? ACTIVITY_TYPES.Other
+  const Icon = config.icon
+  const timeRange = activity.startTime
+    ? formatActivityTimeRange(activity.startTime, activity.endTime)
+    : null
+
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick(activity, e)
+      }}
+      className="flex w-full items-center gap-1.5 rounded-lg border px-1.5 py-1 text-left transition duration-100 hover:scale-[1.02]"
+      style={{ backgroundColor: config.bg, borderColor: config.border, color: config.text }}
+    >
+      <span
+        className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[6px]"
+        style={{ backgroundColor: 'rgba(255,255,255,0.6)' }}
+      >
+        <Icon size={11} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[11px] font-medium leading-tight">
+          {activity.title}
+        </span>
+        {timeRange && (
+          <span className="block truncate text-[10px] leading-tight opacity-80">{timeRange}</span>
+        )}
+      </span>
+    </button>
+  )
+}
+
 function DayCell({
   day,
   isCurrentMonth,
   isToday,
   posts,
+  activities,
   selectedPostId,
   onSelectDay,
+  onAddClick,
   onSelectPost,
+  onSelectActivity,
   compact,
 }) {
-  const overflowing = compact && posts.length > MAX_VISIBLE_POSTS
-  const visiblePosts = overflowing ? posts.slice(0, MAX_VISIBLE_POSTS - 1) : posts
-  const overflow = posts.length - visiblePosts.length
+  const items = [
+    ...posts.map((post) => ({ kind: 'post', data: post })),
+    ...activities.map((activity) => ({ kind: 'activity', data: activity })),
+  ]
+  const overflowing = compact && items.length > MAX_VISIBLE_ITEMS
+  const visibleItems = overflowing ? items.slice(0, MAX_VISIBLE_ITEMS - 1) : items
+  const overflow = items.length - visibleItems.length
 
   return (
-    <button
-      type="button"
+    <div
       onClick={() => onSelectDay(day)}
-      className="flex min-h-[8rem] flex-col items-stretch gap-1 rounded-xl p-1.5 text-left transition hover:bg-(--border-soft) sm:min-h-[11rem]"
+      className="group flex min-h-[8rem] cursor-pointer flex-col items-stretch gap-1 rounded-xl p-1.5 text-left transition hover:bg-(--border-soft) sm:min-h-[11rem]"
       style={{
         backgroundColor: isCurrentMonth ? PAGE_BG : CARD_BG,
         opacity: isCurrentMonth ? 1 : 0.5,
       }}
     >
-      <span
-        className="text-xs font-medium"
-        style={{
-          color: isToday ? ACCENT_SOLID_TEXT : INK_MUTED,
-          backgroundColor: isToday ? ACCENT_SOLID_BG : 'transparent',
-          borderRadius: '999px',
-          width: '1.5rem',
-          height: '1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {day.getDate()}
-      </span>
+      <div className="flex items-center justify-between">
+        <span
+          className="text-xs font-medium"
+          style={{
+            color: isToday ? ACCENT_SOLID_TEXT : INK_MUTED,
+            backgroundColor: isToday ? ACCENT_SOLID_BG : 'transparent',
+            borderRadius: '999px',
+            width: '1.5rem',
+            height: '1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {day.getDate()}
+        </span>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onAddClick(day)
+          }}
+          aria-label="Add to this day"
+          className="rounded-full p-0.5 opacity-0 transition group-hover:opacity-100"
+          style={{ color: INK_MUTED, backgroundColor: CARD_BG }}
+        >
+          <Plus size={12} />
+        </button>
+      </div>
 
       <div className="flex flex-col gap-1">
-        {visiblePosts.map((post) => (
-          <PostThumb
-            key={post.id}
-            post={post}
-            tall={!compact}
-            isSelected={post.id === selectedPostId}
-            onClick={onSelectPost}
-          />
-        ))}
+        {visibleItems.map((item) =>
+          item.kind === 'post' ? (
+            <PostThumb
+              key={item.data.id}
+              post={item.data}
+              tall={!compact}
+              isSelected={item.data.id === selectedPostId}
+              onClick={onSelectPost}
+            />
+          ) : (
+            <ActivityBlock key={item.data.id} activity={item.data} onClick={onSelectActivity} />
+          ),
+        )}
         {overflow > 0 && (
           <span
             className="rounded-full px-1.5 py-0.5 text-center text-[11px] font-medium"
@@ -196,19 +268,27 @@ function DayCell({
           </span>
         )}
       </div>
-    </button>
+    </div>
   )
 }
 
 function CalendarView({ workspaceId }) {
   const [posts, setPosts] = useState(() => getPosts(workspaceId))
+  const [activities, setActivities] = useState(() => getActivities(workspaceId))
   const [referenceDate, setReferenceDate] = useState(() => new Date())
   const [view, setView] = useState('month')
   const [platformFilter, setPlatformFilter] = useState('All')
+  const [typeFilter, setTypeFilter] = useState('Both')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingPost, setEditingPost] = useState(null)
   const [defaultDate, setDefaultDate] = useState(null)
   const [selectedPostId, setSelectedPostId] = useState(null)
+  const [choiceDate, setChoiceDate] = useState(null)
+  const [activityModalOpen, setActivityModalOpen] = useState(false)
+  const [editingActivity, setEditingActivity] = useState(null)
+  const [activityDefaultDate, setActivityDefaultDate] = useState(null)
+  const [popoverActivity, setPopoverActivity] = useState(null)
+  const [popoverAnchor, setPopoverAnchor] = useState(null)
 
   const selectedPost = useMemo(
     () => posts.find((p) => p.id === selectedPostId) ?? null,
@@ -223,7 +303,9 @@ function CalendarView({ workspaceId }) {
   }
   const panelPost = selectedPost ?? lastPanelPost
 
-  const filtersActive = platformFilter !== 'All'
+  const filtersActive = platformFilter !== 'All' || typeFilter !== 'Both'
+  const showPosts = typeFilter !== 'Activities'
+  const showActivities = typeFilter !== 'Posts'
 
   const filteredPosts = useMemo(
     () => posts.filter((p) => platformFilter === 'All' || p.platform === platformFilter),
@@ -240,18 +322,32 @@ function CalendarView({ workspaceId }) {
     return map
   }, [filteredPosts])
 
+  const activitiesByDate = useMemo(() => {
+    const map = {}
+    for (const activity of activities) {
+      if (!activity.date) continue
+      if (!map[activity.date]) map[activity.date] = []
+      map[activity.date].push(activity)
+    }
+    return map
+  }, [activities])
+
   const days = useMemo(() => {
     if (view === 'month') return getMonthGridDays(referenceDate)
     if (view === 'twoWeek') return getTwoWeekDays(referenceDate)
     return getWeekDays(referenceDate)
   }, [view, referenceDate])
 
-  const visiblePostCount = useMemo(() => {
+  const visibleItemCount = useMemo(() => {
     const dayStrings = new Set(days.map(toDateString))
-    return filteredPosts.filter(
-      (p) => p.scheduledDate && dayStrings.has(p.scheduledDate),
-    ).length
-  }, [days, filteredPosts])
+    const postCount = showPosts
+      ? filteredPosts.filter((p) => p.scheduledDate && dayStrings.has(p.scheduledDate)).length
+      : 0
+    const activityCount = showActivities
+      ? activities.filter((a) => a.date && dayStrings.has(a.date)).length
+      : 0
+    return postCount + activityCount
+  }, [days, filteredPosts, activities, showPosts, showActivities])
 
   const todayString = toDateString(new Date())
 
@@ -273,16 +369,61 @@ function CalendarView({ workspaceId }) {
     setPosts(updatedAll.filter((p) => p.workspaceId === workspaceId))
   }
 
-  function openNewPost(day) {
+  function refreshActivities(updatedAll) {
+    setActivities(updatedAll.filter((a) => a.workspaceId === workspaceId))
+  }
+
+  function openChoicePrompt(day) {
+    setChoiceDate(toDateString(day))
+  }
+
+  function handleChoosePost() {
     setEditingPost(null)
-    setDefaultDate(toDateString(day))
+    setDefaultDate(choiceDate)
     setModalOpen(true)
+    setChoiceDate(null)
+  }
+
+  function handleChooseActivity() {
+    setEditingActivity(null)
+    setActivityDefaultDate(choiceDate)
+    setActivityModalOpen(true)
+    setChoiceDate(null)
   }
 
   function openEditPost(post) {
     setEditingPost(post)
     setDefaultDate(null)
     setModalOpen(true)
+  }
+
+  function openEditActivity(activity) {
+    setPopoverActivity(null)
+    setEditingActivity(activity)
+    setActivityDefaultDate(null)
+    setActivityModalOpen(true)
+  }
+
+  function openActivityPopover(activity, e) {
+    setPopoverAnchor(e.currentTarget.getBoundingClientRect())
+    setPopoverActivity(activity)
+  }
+
+  function handleSaveActivity(activityData) {
+    refreshActivities(
+      saveActivity({
+        ...activityData,
+        id: editingActivity?.id,
+        workspaceId,
+      }),
+    )
+    setActivityModalOpen(false)
+  }
+
+  function handleDeleteActivity(activityId) {
+    refreshActivities(deleteActivity(activityId))
+    setActivityModalOpen(false)
+    setPopoverActivity(null)
   }
 
   function handleSave(postData) {
@@ -378,6 +519,23 @@ function CalendarView({ workspaceId }) {
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <FilterPills options={PLATFORMS} value={platformFilter} onChange={setPlatformFilter} />
+        <span className="mx-1 h-5 w-px bg-(--border-strong)" />
+        <div className="flex flex-wrap gap-1 rounded-full p-1" style={{ backgroundColor: CARD_BG }}>
+          {TYPE_FILTER_OPTIONS.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setTypeFilter(option)}
+              className="rounded-full px-3 py-1.5 text-xs font-medium transition"
+              style={{
+                backgroundColor: typeFilter === option ? ACCENT_SOLID_BG : 'transparent',
+                color: typeFilter === option ? ACCENT_SOLID_TEXT : INK_MUTED,
+              }}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div
@@ -402,16 +560,19 @@ function CalendarView({ workspaceId }) {
               day={day}
               isCurrentMonth={view !== 'month' || day.getMonth() === referenceDate.getMonth()}
               isToday={dateString === todayString}
-              posts={postsByDate[dateString] ?? []}
+              posts={showPosts ? postsByDate[dateString] ?? [] : []}
+              activities={showActivities ? activitiesByDate[dateString] ?? [] : []}
               selectedPostId={selectedPostId}
-              onSelectDay={openNewPost}
+              onSelectDay={openChoicePrompt}
+              onAddClick={openChoicePrompt}
               onSelectPost={(post) => setSelectedPostId(post.id)}
+              onSelectActivity={openActivityPopover}
               compact={view !== 'week'}
             />
           )
         })}
 
-        {visiblePostCount === 0 && (
+        {visibleItemCount === 0 && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <p
               className="rounded-full px-4 py-2 text-sm"
@@ -419,12 +580,15 @@ function CalendarView({ workspaceId }) {
             >
               {filtersActive ? (
                 <>
-                  No posts match your filters.{' '}
+                  Nothing matches your filters.{' '}
                   <button
                     type="button"
                     className="pointer-events-auto font-medium underline"
                     style={{ color: INK }}
-                    onClick={() => setPlatformFilter('All')}
+                    onClick={() => {
+                      setPlatformFilter('All')
+                      setTypeFilter('Both')
+                    }}
                   >
                     Clear filters
                   </button>
@@ -432,7 +596,7 @@ function CalendarView({ workspaceId }) {
               ) : (
                 `Nothing scheduled this ${
                   view === 'month' ? 'month' : view === 'twoWeek' ? 'period' : 'week'
-                }. Click any day to add a post.`
+                }. Click any day to add a post or activity.`
               )}
             </p>
           </div>
@@ -513,6 +677,33 @@ function CalendarView({ workspaceId }) {
         post={editingPost}
         defaultDate={defaultDate}
       />
+
+      <AddChoiceModal
+        open={Boolean(choiceDate)}
+        onClose={() => setChoiceDate(null)}
+        onChoosePost={handleChoosePost}
+        onChooseActivity={handleChooseActivity}
+      />
+
+      <ActivityFormModal
+        key={`${editingActivity?.id ?? 'new'}-${activityDefaultDate ?? ''}`}
+        open={activityModalOpen}
+        onClose={() => setActivityModalOpen(false)}
+        onSave={handleSaveActivity}
+        onDelete={handleDeleteActivity}
+        activity={editingActivity}
+        defaultDate={activityDefaultDate}
+      />
+
+      {popoverActivity && popoverAnchor && (
+        <ActivityPopover
+          activity={popoverActivity}
+          anchorRect={popoverAnchor}
+          onClose={() => setPopoverActivity(null)}
+          onEdit={openEditActivity}
+          onDelete={handleDeleteActivity}
+        />
+      )}
     </>
   )
 }
