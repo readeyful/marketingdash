@@ -11,7 +11,7 @@ export default function AppLayout() {
 
   return (
     <div
-      className="flex min-h-screen flex-col md:flex-row"
+      className="flex h-screen flex-col md:flex-row"
       style={{ backgroundColor: PAGE_BG }}
     >
       <Sidebar />
@@ -42,9 +42,9 @@ export default function AppLayout() {
         </button>
       </header>
 
-      <div className="flex flex-1 flex-col overflow-y-auto">
+      <div className="flex flex-1 flex-col overflow-y-auto md:h-screen md:overflow-hidden">
         <TopBar />
-        <main className="flex-1 p-6 pb-20 md:p-8 md:pb-8">
+        <main className="flex-1 overflow-y-auto p-6 pb-20 md:p-8 md:pb-8">
           <Outlet />
         </main>
       </div>
