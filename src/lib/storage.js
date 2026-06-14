@@ -60,6 +60,11 @@ function unwrap({ data, error }) {
   return data
 }
 
+async function getCurrentUserId() {
+  const { data } = await supabase.auth.getUser()
+  return data?.user?.id ?? null
+}
+
 // ---------------------------------------------------------------------------
 // Workspaces
 // ---------------------------------------------------------------------------
@@ -144,9 +149,11 @@ export async function savePost(post) {
           postTip: '',
           sourceUrl: null,
           isFavorited: false,
+          vaultItemId: null,
           ...post,
           createdAt: now,
           updatedAt: now,
+          createdBy: await getCurrentUserId(),
         }),
       ),
     )
@@ -217,6 +224,7 @@ export async function saveVaultItem(item) {
           ...item,
           createdAt: now,
           updatedAt: now,
+          createdBy: await getCurrentUserId(),
         }),
       ),
     )
@@ -329,6 +337,7 @@ export async function saveActivity(activity) {
           ...activity,
           createdAt: now,
           updatedAt: now,
+          createdBy: await getCurrentUserId(),
         }),
       ),
     )
@@ -375,6 +384,7 @@ export async function saveExpense(expense) {
         toSnakeRow({
           ...expense,
           createdAt: new Date().toISOString(),
+          createdBy: await getCurrentUserId(),
         }),
       ),
     )
