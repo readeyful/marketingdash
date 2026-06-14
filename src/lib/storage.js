@@ -1,35 +1,15 @@
-// All localStorage read/write lives here. Nothing else should touch
-// localStorage directly — in Phase 2 this file is swapped for a
-// Supabase-backed module with the same exported function signatures.
+// Phase 2: reads/writes go through Supabase. Local-only UI preferences
+// (active workspace, theme, Anthropic key) still live in localStorage.
+// Every exported function below keeps the same name and argument shape
+// as Phase 1 — the data-fetching ones now return Promises.
 
-const KEYS = {
-  workspaces: 'brandmark:workspaces',
-  posts: 'brandmark:posts',
-  expenses: 'brandmark:expenses',
-  strategy: 'brandmark:strategy',
+import { supabase } from './supabase'
+
+const LOCAL_KEYS = {
   activeWorkspace: 'brandmark:activeWorkspace',
   theme: 'brandmark:theme',
   anthropicApiKey: 'brandmark:anthropicApiKey',
-  vault: 'brandmark:vault',
-  activities: 'brandmark:activities',
 }
-
-const DEFAULT_WORKSPACES = [
-  {
-    id: 'ride-home-re',
-    name: 'Ride Home RE',
-    brandColor: '#5C2D6E',
-    accentColor: '#AAFF00',
-    monthlyAdBudget: 0,
-  },
-  {
-    id: 'abigail-brand',
-    name: 'Abigail Brand',
-    brandColor: '#2D2D2D',
-    accentColor: '#F5F5F5',
-    monthlyAdBudget: 0,
-  },
-]
 
 const STRATEGY_PLACEHOLDER = `<h1>Brand Mission</h1><p></p><h1>Target Audience</h1><p></p><h1>Content Pillars</h1><p></p><h1>Tone of Voice</h1><p></p><h1>Monthly Goals</h1><p></p>`
 
@@ -46,51 +26,79 @@ function writeJSON(key, value) {
   localStorage.setItem(key, JSON.stringify(value))
 }
 
-function uuid() {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
+// ---------------------------------------------------------------------------
+// camelCase <-> snake_case row conversion
+// ---------------------------------------------------------------------------
+
+function camelToSnake(str) {
+  return str.replace(/([A-Z])/g, '_$1').toLowerCase()
+}
+
+function snakeToCamel(str) {
+  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase())
+}
+
+function toSnakeRow(obj) {
+  const row = {}
+  for (const [key, value] of Object.entries(obj)) {
+    row[camelToSnake(key)] = value
   }
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+  return row
+}
+
+function toCamelRow(row) {
+  if (!row) return row
+  const obj = {}
+  for (const [key, value] of Object.entries(row)) {
+    obj[snakeToCamel(key)] = value
+  }
+  return obj
+}
+
+function unwrap({ data, error }) {
+  if (error) throw error
+  return data
 }
 
 // ---------------------------------------------------------------------------
 // Workspaces
 // ---------------------------------------------------------------------------
 
-export function getWorkspaces() {
-  let workspaces = readJSON(KEYS.workspaces, null)
-  if (!workspaces) {
-    workspaces = DEFAULT_WORKSPACES
-    writeJSON(KEYS.workspaces, workspaces)
-  }
-  return workspaces
+export async function getWorkspaces() {
+  const data = unwrap(await supabase.from('workspaces').select())
+  return data.map(toCamelRow)
 }
 
-export function getWorkspace(workspaceId) {
-  return getWorkspaces().find((w) => w.id === workspaceId) ?? null
+export async function getWorkspace(workspaceId) {
+  const { data, error } = await supabase
+    .from('workspaces')
+    .select()
+    .eq('id', workspaceId)
+    .single()
+  if (error) return null
+  return toCamelRow(data)
 }
 
-export function updateWorkspace(workspaceId, updates) {
-  const workspaces = getWorkspaces().map((w) =>
-    w.id === workspaceId ? { ...w, ...updates } : w,
+export async function updateWorkspace(workspaceId, updates) {
+  unwrap(
+    await supabase.from('workspaces').update(toSnakeRow(updates)).eq('id', workspaceId),
   )
-  writeJSON(KEYS.workspaces, workspaces)
-  return workspaces
+  return getWorkspaces()
 }
 
 // ---------------------------------------------------------------------------
-// Active workspace
+// Active workspace (UI preference — stays local)
 // ---------------------------------------------------------------------------
 
 export function getActiveWorkspaceId() {
-  return readJSON(KEYS.activeWorkspace, null)
+  return readJSON(LOCAL_KEYS.activeWorkspace, null)
 }
 
 export function setActiveWorkspaceId(workspaceId) {
   if (workspaceId === null) {
-    localStorage.removeItem(KEYS.activeWorkspace)
+    localStorage.removeItem(LOCAL_KEYS.activeWorkspace)
   } else {
-    writeJSON(KEYS.activeWorkspace, workspaceId)
+    writeJSON(LOCAL_KEYS.activeWorkspace, workspaceId)
   }
 }
 
@@ -98,50 +106,59 @@ export function setActiveWorkspaceId(workspaceId) {
 // Posts
 // ---------------------------------------------------------------------------
 
-export function getPosts(workspaceId) {
-  const all = readJSON(KEYS.posts, [])
-  return workspaceId ? all.filter((p) => p.workspaceId === workspaceId) : all
+export async function getPosts(workspaceId) {
+  let query = supabase.from('posts').select()
+  if (workspaceId) query = query.eq('workspace_id', workspaceId)
+  const data = unwrap(await query.order('created_at', { ascending: true }))
+  return data.map(toCamelRow)
 }
 
-export function getPost(postId) {
-  return readJSON(KEYS.posts, []).find((p) => p.id === postId) ?? null
+export async function getPost(postId) {
+  const { data, error } = await supabase.from('posts').select().eq('id', postId).single()
+  if (error) return null
+  return toCamelRow(data)
 }
 
-export function savePost(post) {
-  const all = readJSON(KEYS.posts, [])
+export async function savePost(post) {
   const now = new Date().toISOString()
-  const idx = all.findIndex((p) => p.id === post.id)
 
-  if (idx >= 0) {
-    all[idx] = { ...all[idx], ...post, updatedAt: now }
+  if (post.id) {
+    unwrap(
+      await supabase
+        .from('posts')
+        .update(toSnakeRow({ ...post, updatedAt: now }))
+        .eq('id', post.id),
+    )
   } else {
-    all.push({
-      isIdea: false,
-      scheduledDate: null,
-      caption: '',
-      notes: '',
-      postType: null,
-      imageUrl: null,
-      postGoal: '',
-      postStrategy: '',
-      postTip: '',
-      sourceUrl: null,
-      isFavorited: false,
-      ...post,
-      id: post.id ?? uuid(),
-      createdAt: now,
-      updatedAt: now,
-    })
+    unwrap(
+      await supabase.from('posts').insert(
+        toSnakeRow({
+          isIdea: false,
+          scheduledDate: null,
+          caption: '',
+          notes: '',
+          postType: null,
+          imageUrl: null,
+          postGoal: '',
+          postStrategy: '',
+          postTip: '',
+          sourceUrl: null,
+          isFavorited: false,
+          ...post,
+          createdAt: now,
+          updatedAt: now,
+        }),
+      ),
+    )
   }
 
-  writeJSON(KEYS.posts, all)
-  return all
+  return getPosts(post.workspaceId)
 }
 
-export function deletePost(postId) {
-  const all = readJSON(KEYS.posts, []).filter((p) => p.id !== postId)
-  writeJSON(KEYS.posts, all)
-  return all
+export async function deletePost(postId) {
+  const post = await getPost(postId)
+  unwrap(await supabase.from('posts').delete().eq('id', postId))
+  return post ? getPosts(post.workspaceId) : []
 }
 
 // ---------------------------------------------------------------------------
@@ -154,51 +171,63 @@ export function isVaultItemNew(item) {
   return Date.now() - new Date(item.createdAt).getTime() < NEW_ITEM_WINDOW_MS
 }
 
-export function getVaultItems(workspaceId) {
-  const all = readJSON(KEYS.vault, [])
-  return workspaceId ? all.filter((v) => v.workspaceId === workspaceId) : all
+export async function getVaultItems(workspaceId) {
+  let query = supabase.from('vault').select()
+  if (workspaceId) query = query.eq('workspace_id', workspaceId)
+  const data = unwrap(await query.order('created_at', { ascending: true }))
+  return data.map(toCamelRow)
 }
 
-export function saveVaultItem(item) {
-  const all = readJSON(KEYS.vault, [])
-  const now = new Date().toISOString()
-  const idx = all.findIndex((v) => v.id === item.id)
+export async function getVaultItem(itemId) {
+  const { data, error } = await supabase.from('vault').select().eq('id', itemId).single()
+  if (error) return null
+  return toCamelRow(data)
+}
 
-  if (idx >= 0) {
-    all[idx] = { ...all[idx], ...item, updatedAt: now }
+export async function saveVaultItem(item) {
+  const now = new Date().toISOString()
+
+  if (item.id) {
+    unwrap(
+      await supabase
+        .from('vault')
+        .update(toSnakeRow({ ...item, updatedAt: now }))
+        .eq('id', item.id),
+    )
   } else {
-    all.push({
-      type: 'template',
-      title: '',
-      format: null,
-      pillar: null,
-      audience: null,
-      platforms: [],
-      images: [],
-      caption: '',
-      notes: '',
-      postGoal: '',
-      postStrategy: '',
-      postTip: '',
-      sourceUrl: null,
-      candcName: null,
-      isFavorited: false,
-      scheduledPostIds: [],
-      ...item,
-      id: item.id ?? uuid(),
-      createdAt: now,
-      updatedAt: now,
-    })
+    unwrap(
+      await supabase.from('vault').insert(
+        toSnakeRow({
+          type: 'template',
+          title: '',
+          format: null,
+          pillar: null,
+          audience: null,
+          platforms: [],
+          images: [],
+          caption: '',
+          notes: '',
+          postGoal: '',
+          postStrategy: '',
+          postTip: '',
+          sourceUrl: null,
+          candcName: null,
+          isFavorited: false,
+          scheduledPostIds: [],
+          ...item,
+          createdAt: now,
+          updatedAt: now,
+        }),
+      ),
+    )
   }
 
-  writeJSON(KEYS.vault, all)
-  return all
+  return getVaultItems(item.workspaceId)
 }
 
-export function duplicateVaultItem(itemId) {
-  const all = readJSON(KEYS.vault, [])
-  const source = all.find((v) => v.id === itemId)
-  if (!source) return all
+export async function duplicateVaultItem(itemId) {
+  const source = await getVaultItem(itemId)
+  if (!source) return getVaultItems()
   return saveVaultItem({
     ...source,
     id: undefined,
@@ -208,10 +237,10 @@ export function duplicateVaultItem(itemId) {
   })
 }
 
-export function deleteVaultItem(itemId) {
-  const all = readJSON(KEYS.vault, []).filter((v) => v.id !== itemId)
-  writeJSON(KEYS.vault, all)
-  return all
+export async function deleteVaultItem(itemId) {
+  const item = await getVaultItem(itemId)
+  unwrap(await supabase.from('vault').delete().eq('id', itemId))
+  return item ? getVaultItems(item.workspaceId) : []
 }
 
 // Builds a vault item from a post banked via the Posts page link box
@@ -230,11 +259,11 @@ export function inspoPostToVaultItem(post, workspaceId) {
 
 // Creates a calendar post from a vault item and records the link back
 // on the vault item's scheduledPostIds.
-export function scheduleVaultItem(itemId, date) {
-  const item = readJSON(KEYS.vault, []).find((v) => v.id === itemId)
+export async function scheduleVaultItem(itemId, date) {
+  const item = await getVaultItem(itemId)
   if (!item) return null
 
-  const posts = savePost({
+  const posts = await savePost({
     workspaceId: item.workspaceId,
     title: item.title,
     platform: item.platforms[0] ?? 'Instagram',
@@ -249,7 +278,7 @@ export function scheduleVaultItem(itemId, date) {
     sourceUrl: item.sourceUrl,
   })
   const newPost = posts[posts.length - 1]
-  saveVaultItem({
+  await saveVaultItem({
     id: item.id,
     scheduledPostIds: [...(item.scheduledPostIds ?? []), newPost.id],
   })
@@ -260,112 +289,146 @@ export function scheduleVaultItem(itemId, date) {
 // Activities
 // ---------------------------------------------------------------------------
 
-export function getActivities(workspaceId) {
-  const all = readJSON(KEYS.activities, [])
-  return workspaceId ? all.filter((a) => a.workspaceId === workspaceId) : all
+export async function getActivities(workspaceId) {
+  let query = supabase.from('activities').select()
+  if (workspaceId) query = query.eq('workspace_id', workspaceId)
+  const data = unwrap(await query.order('created_at', { ascending: true }))
+  return data.map(toCamelRow)
 }
 
-export function saveActivity(activity) {
-  const all = readJSON(KEYS.activities, [])
-  const now = new Date().toISOString()
-  const idx = all.findIndex((a) => a.id === activity.id)
+export async function getActivity(activityId) {
+  const { data, error } = await supabase
+    .from('activities')
+    .select()
+    .eq('id', activityId)
+    .single()
+  if (error) return null
+  return toCamelRow(data)
+}
 
-  if (idx >= 0) {
-    all[idx] = { ...all[idx], ...activity, updatedAt: now }
+export async function saveActivity(activity) {
+  const now = new Date().toISOString()
+
+  if (activity.id) {
+    unwrap(
+      await supabase
+        .from('activities')
+        .update(toSnakeRow({ ...activity, updatedAt: now }))
+        .eq('id', activity.id),
+    )
   } else {
-    all.push({
-      title: '',
-      type: 'Other',
-      date: null,
-      startTime: null,
-      endTime: null,
-      note: null,
-      ...activity,
-      id: activity.id ?? uuid(),
-      createdAt: now,
-      updatedAt: now,
-    })
+    unwrap(
+      await supabase.from('activities').insert(
+        toSnakeRow({
+          title: '',
+          type: 'Other',
+          date: null,
+          startTime: null,
+          endTime: null,
+          note: null,
+          ...activity,
+          createdAt: now,
+          updatedAt: now,
+        }),
+      ),
+    )
   }
 
-  writeJSON(KEYS.activities, all)
-  return all
+  return getActivities(activity.workspaceId)
 }
 
-export function deleteActivity(activityId) {
-  const all = readJSON(KEYS.activities, []).filter((a) => a.id !== activityId)
-  writeJSON(KEYS.activities, all)
-  return all
+export async function deleteActivity(activityId) {
+  const activity = await getActivity(activityId)
+  unwrap(await supabase.from('activities').delete().eq('id', activityId))
+  return activity ? getActivities(activity.workspaceId) : []
 }
 
 // ---------------------------------------------------------------------------
 // Expenses
 // ---------------------------------------------------------------------------
 
-export function getExpenses(workspaceId) {
-  const all = readJSON(KEYS.expenses, [])
-  return workspaceId ? all.filter((e) => e.workspaceId === workspaceId) : all
+export async function getExpenses(workspaceId) {
+  let query = supabase.from('expenses').select()
+  if (workspaceId) query = query.eq('workspace_id', workspaceId)
+  const data = unwrap(await query.order('created_at', { ascending: true }))
+  return data.map(toCamelRow)
 }
 
-export function saveExpense(expense) {
-  const all = readJSON(KEYS.expenses, [])
-  const idx = all.findIndex((e) => e.id === expense.id)
+export async function getExpense(expenseId) {
+  const { data, error } = await supabase
+    .from('expenses')
+    .select()
+    .eq('id', expenseId)
+    .single()
+  if (error) return null
+  return toCamelRow(data)
+}
 
-  if (idx >= 0) {
-    all[idx] = { ...all[idx], ...expense }
+export async function saveExpense(expense) {
+  if (expense.id) {
+    unwrap(
+      await supabase.from('expenses').update(toSnakeRow(expense)).eq('id', expense.id),
+    )
   } else {
-    all.push({
-      ...expense,
-      id: expense.id ?? uuid(),
-      createdAt: new Date().toISOString(),
-    })
+    unwrap(
+      await supabase.from('expenses').insert(
+        toSnakeRow({
+          ...expense,
+          createdAt: new Date().toISOString(),
+        }),
+      ),
+    )
   }
 
-  writeJSON(KEYS.expenses, all)
-  return all
+  return getExpenses(expense.workspaceId)
 }
 
-export function deleteExpense(expenseId) {
-  const all = readJSON(KEYS.expenses, []).filter((e) => e.id !== expenseId)
-  writeJSON(KEYS.expenses, all)
-  return all
+export async function deleteExpense(expenseId) {
+  const expense = await getExpense(expenseId)
+  unwrap(await supabase.from('expenses').delete().eq('id', expenseId))
+  return expense ? getExpenses(expense.workspaceId) : []
 }
 
 // ---------------------------------------------------------------------------
 // Strategy
 // ---------------------------------------------------------------------------
 
-export function getStrategy(workspaceId) {
-  const all = readJSON(KEYS.strategy, {})
-  return all[workspaceId] ?? STRATEGY_PLACEHOLDER
+export async function getStrategy(workspaceId) {
+  const { data, error } = await supabase
+    .from('strategy')
+    .select()
+    .eq('workspace_id', workspaceId)
+    .maybeSingle()
+  if (error) throw error
+  return data?.content ?? STRATEGY_PLACEHOLDER
 }
 
-export function saveStrategy(workspaceId, content) {
-  const all = readJSON(KEYS.strategy, {})
-  all[workspaceId] = content
-  writeJSON(KEYS.strategy, all)
+export async function saveStrategy(workspaceId, content) {
+  unwrap(
+    await supabase.from('strategy').upsert(toSnakeRow({ workspaceId, content })),
+  )
 }
 
 // ---------------------------------------------------------------------------
-// Theme
+// Theme (UI preference — stays local)
 // ---------------------------------------------------------------------------
 
 export function getTheme() {
-  return readJSON(KEYS.theme, 'light')
+  return readJSON(LOCAL_KEYS.theme, 'light')
 }
 
 export function setTheme(theme) {
-  writeJSON(KEYS.theme, theme)
+  writeJSON(LOCAL_KEYS.theme, theme)
 }
 
 // ---------------------------------------------------------------------------
-// Anthropic API key (for the AI caption generator — Phase 1 only; in Phase 2
-// this moves behind a serverless function so the key never lives in the browser)
+// Anthropic API key (Phase 1 only — moves behind a serverless function later)
 // ---------------------------------------------------------------------------
 
 export function getAnthropicApiKey() {
-  return readJSON(KEYS.anthropicApiKey, '')
+  return readJSON(LOCAL_KEYS.anthropicApiKey, '')
 }
 
 export function setAnthropicApiKey(key) {
-  writeJSON(KEYS.anthropicApiKey, key)
+  writeJSON(LOCAL_KEYS.anthropicApiKey, key)
 }

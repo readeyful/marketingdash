@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import Modal from './Modal'
 import {
@@ -241,19 +241,38 @@ function TemplateTab({ form, update, isCandc }) {
 function FromInspoTab({ workspaceId, selectedIds, onToggle }) {
   // "Inspo" items are posts banked from a link on the Posts page: marked
   // as an idea with a URL in notes. Exclude ones already imported into the Vault.
-  const candidates = useMemo(() => {
-    const importedUrls = new Set(
-      getVaultItems(workspaceId)
-        .map((v) => v.sourceUrl)
-        .filter(Boolean),
+  const [candidates, setCandidates] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    Promise.all([getVaultItems(workspaceId), getPosts(workspaceId)]).then(
+      ([vaultItems, posts]) => {
+        if (!active) return
+        const importedUrls = new Set(
+          vaultItems.map((v) => v.sourceUrl).filter(Boolean),
+        )
+        setCandidates(
+          posts.filter(
+            (p) =>
+              p.isIdea &&
+              URL_PATTERN.test((p.sourceUrl ?? p.notes ?? '').trim()) &&
+              !importedUrls.has((p.sourceUrl ?? p.notes).trim()),
+          ),
+        )
+      },
     )
-    return getPosts(workspaceId).filter(
-      (p) =>
-        p.isIdea &&
-        URL_PATTERN.test((p.sourceUrl ?? p.notes ?? '').trim()) &&
-        !importedUrls.has((p.sourceUrl ?? p.notes).trim()),
-    )
+    return () => {
+      active = false
+    }
   }, [workspaceId])
+
+  if (candidates === null) {
+    return (
+      <p className="py-6 text-center text-sm" style={{ color: INK_MUTED }}>
+        Loading…
+      </p>
+    )
+  }
 
   if (candidates.length === 0) {
     return (

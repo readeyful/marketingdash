@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { DndContext, useDroppable } from '@dnd-kit/core'
 import { ChevronLeft, ChevronRight, Heart, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import LoadingState from '../components/LoadingState'
 import VaultCard from '../components/VaultCard'
 import VaultDetailPanel from '../components/VaultDetailPanel'
 import VaultItemFormModal from '../components/VaultItemFormModal'
@@ -158,7 +159,8 @@ function MiniCalendar({ referenceDate, onNavigate }) {
 }
 
 function VaultView({ workspaceId }) {
-  const [items, setItems] = useState(() => getVaultItems(workspaceId))
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
   const [formatFilter, setFormatFilter] = useState('')
   const [pillarFilter, setPillarFilter] = useState('')
   const [audienceFilter, setAudienceFilter] = useState('')
@@ -178,6 +180,19 @@ function VaultView({ workspaceId }) {
     const t = setTimeout(() => setToast(null), 3000)
     return () => clearTimeout(t)
   }, [toast])
+
+  useEffect(() => {
+    let active = true
+    getVaultItems(workspaceId).then((data) => {
+      if (active) {
+        setItems(data)
+        setLoading(false)
+      }
+    })
+    return () => {
+      active = false
+    }
+  }, [workspaceId])
 
   const selectedItem = items.find((v) => v.id === selectedItemId) ?? null
 
@@ -218,35 +233,35 @@ function VaultView({ workspaceId }) {
     setItems(updatedAll.filter((v) => v.workspaceId === workspaceId))
   }
 
-  function handleSave(itemData) {
-    refresh(saveVaultItem({ ...itemData, workspaceId }))
+  async function handleSave(itemData) {
+    refresh(await saveVaultItem({ ...itemData, workspaceId }))
     setModalOpen(false)
     setEditingItem(null)
   }
 
-  function handleImportInspo(postIds) {
+  async function handleImportInspo(postIds) {
     let all
     for (const postId of postIds) {
-      const post = getPost(postId)
-      if (post) all = saveVaultItem(inspoPostToVaultItem(post, workspaceId))
+      const post = await getPost(postId)
+      if (post) all = await saveVaultItem(inspoPostToVaultItem(post, workspaceId))
     }
     if (all) refresh(all)
     setModalOpen(false)
   }
 
-  function handleUpdateSelected(updates) {
+  async function handleUpdateSelected(updates) {
     if (!selectedItem) return
-    refresh(saveVaultItem({ id: selectedItem.id, ...updates }))
+    refresh(await saveVaultItem({ id: selectedItem.id, ...updates }))
   }
 
-  function handleDelete(itemId) {
-    refresh(deleteVaultItem(itemId))
+  async function handleDelete(itemId) {
+    refresh(await deleteVaultItem(itemId))
     if (itemId === selectedItemId) setSelectedItemId(null)
   }
 
-  function handleSchedule(itemId, date) {
-    const post = scheduleVaultItem(itemId, date)
-    refresh(getVaultItems())
+  async function handleSchedule(itemId, date) {
+    const post = await scheduleVaultItem(itemId, date)
+    refresh(await getVaultItems(workspaceId))
     if (post) {
       setToast({ date })
     }
@@ -266,6 +281,10 @@ function VaultView({ workspaceId }) {
     setAudienceFilter('')
     setNewOnly(false)
     setFavoritesOnly(false)
+  }
+
+  if (loading) {
+    return <LoadingState />
   }
 
   return (
@@ -399,8 +418,8 @@ function VaultView({ workspaceId }) {
                   item={item}
                   isSelected={item.id === selectedItemId}
                   onClick={(v) => setSelectedItemId(v.id)}
-                  onToggleFavorite={(v) =>
-                    refresh(saveVaultItem({ id: v.id, isFavorited: !v.isFavorited }))
+                  onToggleFavorite={async (v) =>
+                    refresh(await saveVaultItem({ id: v.id, isFavorited: !v.isFavorited }))
                   }
                 />
               ))}
@@ -439,7 +458,7 @@ function VaultView({ workspaceId }) {
                 setEditingItem(v)
                 setModalOpen(true)
               }}
-              onDuplicate={(id) => refresh(duplicateVaultItem(id))}
+              onDuplicate={async (id) => refresh(await duplicateVaultItem(id))}
               onDelete={handleDelete}
               onSchedule={handleSchedule}
             />
@@ -466,7 +485,7 @@ function VaultView({ workspaceId }) {
                   setEditingItem(v)
                   setModalOpen(true)
                 }}
-                onDuplicate={(id) => refresh(duplicateVaultItem(id))}
+                onDuplicate={async (id) => refresh(await duplicateVaultItem(id))}
                 onDelete={handleDelete}
                 onSchedule={handleSchedule}
               />

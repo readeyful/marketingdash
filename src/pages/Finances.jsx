@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Download, Plus } from 'lucide-react'
 import ExpenseFormModal from '../components/ExpenseFormModal'
+import LoadingState from '../components/LoadingState'
 import StatCard from '../components/StatCard'
 import { useWorkspace } from '../context/workspace-context'
 import { PLATFORM_ICONS } from '../lib/constants'
@@ -81,9 +82,23 @@ function downloadCSV(expenses, filename) {
 
 function FinancesView({ workspaceId }) {
   const { activeWorkspace, updateActiveWorkspace } = useWorkspace()
-  const [expenses, setExpenses] = useState(() => getExpenses(workspaceId))
+  const [expenses, setExpenses] = useState([])
+  const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingExpense, setEditingExpense] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    getExpenses(workspaceId).then((data) => {
+      if (active) {
+        setExpenses(data)
+        setLoading(false)
+      }
+    })
+    return () => {
+      active = false
+    }
+  }, [workspaceId])
 
   const today = todayDate()
   const monthStart = startOfMonthString(today)
@@ -131,8 +146,8 @@ function FinancesView({ workspaceId }) {
     setModalOpen(true)
   }
 
-  function handleSave(expenseData) {
-    const updated = saveExpense({
+  async function handleSave(expenseData) {
+    const updated = await saveExpense({
       ...expenseData,
       id: editingExpense?.id,
       workspaceId,
@@ -141,14 +156,19 @@ function FinancesView({ workspaceId }) {
     setModalOpen(false)
   }
 
-  function handleDelete(expenseId) {
-    setExpenses(deleteExpense(expenseId).filter((e) => e.workspaceId === workspaceId))
+  async function handleDelete(expenseId) {
+    const updated = await deleteExpense(expenseId)
+    setExpenses(updated.filter((e) => e.workspaceId === workspaceId))
     setModalOpen(false)
   }
 
   function handleExport() {
     const inRange = expenses.filter((e) => e.date >= exportStart && e.date <= exportEnd)
     downloadCSV(inRange, `expenses_${exportStart}_to_${exportEnd}.csv`)
+  }
+
+  if (loading) {
+    return <LoadingState />
   }
 
   return (

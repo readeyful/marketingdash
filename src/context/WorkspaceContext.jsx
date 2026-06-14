@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useAuth } from './auth-context'
 import {
   getActiveWorkspaceId,
   getWorkspaces,
@@ -8,10 +9,26 @@ import {
 import { WorkspaceContext } from './workspace-context'
 
 export function WorkspaceProvider({ children }) {
-  const [workspaces, setWorkspaces] = useState(() => getWorkspaces())
+  const { session } = useAuth()
+  const [workspaces, setWorkspaces] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeWorkspaceId, setActiveWorkspaceIdState] = useState(() =>
     getActiveWorkspaceId(),
   )
+
+  useEffect(() => {
+    let active = true
+    const load = session ? getWorkspaces() : Promise.resolve([])
+    load.then((data) => {
+      if (active) {
+        setWorkspaces(data)
+        setLoading(false)
+      }
+    })
+    return () => {
+      active = false
+    }
+  }, [session])
 
   const activeWorkspace = useMemo(
     () => workspaces.find((w) => w.id === activeWorkspaceId) ?? null,
@@ -23,13 +40,17 @@ export function WorkspaceProvider({ children }) {
     setActiveWorkspaceIdState(workspaceId)
   }
 
-  function updateActiveWorkspace(updates) {
+  async function updateActiveWorkspace(updates) {
     if (!activeWorkspaceId) return
-    setWorkspaces(updateWorkspace(activeWorkspaceId, updates))
+    setWorkspaces((prev) =>
+      prev.map((w) => (w.id === activeWorkspaceId ? { ...w, ...updates } : w)),
+    )
+    await updateWorkspace(activeWorkspaceId, updates)
   }
 
   const value = {
     workspaces,
+    loading,
     activeWorkspace,
     selectWorkspace,
     updateActiveWorkspace,

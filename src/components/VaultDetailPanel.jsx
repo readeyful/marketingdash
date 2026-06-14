@@ -52,9 +52,18 @@ export default function VaultDetailPanel({
 
   const typeInfo = VAULT_TYPES[item.type] ?? VAULT_TYPES.template
   const images = item.images ?? []
-  const usedPosts = (item.scheduledPostIds ?? [])
-    .map((id) => getPost(id))
-    .filter(Boolean)
+  const [usedPosts, setUsedPosts] = useState([])
+
+  useEffect(() => {
+    let active = true
+    const ids = item.scheduledPostIds ?? []
+    Promise.all(ids.map((id) => getPost(id))).then((posts) => {
+      if (active) setUsedPosts(posts.filter(Boolean))
+    })
+    return () => {
+      active = false
+    }
+  }, [item.scheduledPostIds])
 
   function copyCaption() {
     navigator.clipboard.writeText(captionDraft)

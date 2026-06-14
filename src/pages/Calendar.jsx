@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import ActivityFormModal from '../components/ActivityFormModal'
 import ActivityPopover from '../components/ActivityPopover'
 import AddChoiceModal from '../components/AddChoiceModal'
+import LoadingState from '../components/LoadingState'
 import PostDetailPanel from '../components/PostDetailPanel'
 import PostFormModal from '../components/PostFormModal'
 import { useWorkspace } from '../context/workspace-context'
@@ -273,8 +274,9 @@ function DayCell({
 }
 
 function CalendarView({ workspaceId }) {
-  const [posts, setPosts] = useState(() => getPosts(workspaceId))
-  const [activities, setActivities] = useState(() => getActivities(workspaceId))
+  const [posts, setPosts] = useState([])
+  const [activities, setActivities] = useState([])
+  const [loading, setLoading] = useState(true)
   const [referenceDate, setReferenceDate] = useState(() => new Date())
   const [view, setView] = useState('month')
   const [platformFilter, setPlatformFilter] = useState('All')
@@ -289,6 +291,22 @@ function CalendarView({ workspaceId }) {
   const [activityDefaultDate, setActivityDefaultDate] = useState(null)
   const [popoverActivity, setPopoverActivity] = useState(null)
   const [popoverAnchor, setPopoverAnchor] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    Promise.all([getPosts(workspaceId), getActivities(workspaceId)]).then(
+      ([postsData, activitiesData]) => {
+        if (active) {
+          setPosts(postsData)
+          setActivities(activitiesData)
+          setLoading(false)
+        }
+      },
+    )
+    return () => {
+      active = false
+    }
+  }, [workspaceId])
 
   const selectedPost = useMemo(
     () => posts.find((p) => p.id === selectedPostId) ?? null,
@@ -409,9 +427,9 @@ function CalendarView({ workspaceId }) {
     setPopoverActivity(activity)
   }
 
-  function handleSaveActivity(activityData) {
+  async function handleSaveActivity(activityData) {
     refreshActivities(
-      saveActivity({
+      await saveActivity({
         ...activityData,
         id: editingActivity?.id,
         workspaceId,
@@ -420,15 +438,15 @@ function CalendarView({ workspaceId }) {
     setActivityModalOpen(false)
   }
 
-  function handleDeleteActivity(activityId) {
-    refreshActivities(deleteActivity(activityId))
+  async function handleDeleteActivity(activityId) {
+    refreshActivities(await deleteActivity(activityId))
     setActivityModalOpen(false)
     setPopoverActivity(null)
   }
 
-  function handleSave(postData) {
+  async function handleSave(postData) {
     refresh(
-      savePost({
+      await savePost({
         ...postData,
         id: editingPost?.id,
         workspaceId,
@@ -437,15 +455,19 @@ function CalendarView({ workspaceId }) {
     setModalOpen(false)
   }
 
-  function handleUpdateSelected(updates) {
+  async function handleUpdateSelected(updates) {
     if (!selectedPost) return
-    refresh(savePost({ ...selectedPost, ...updates }))
+    refresh(await savePost({ ...selectedPost, ...updates }))
   }
 
-  function handleDelete(postId) {
-    refresh(deletePost(postId))
+  async function handleDelete(postId) {
+    refresh(await deletePost(postId))
     setModalOpen(false)
     if (postId === selectedPostId) setSelectedPostId(null)
+  }
+
+  if (loading) {
+    return <LoadingState />
   }
 
   const heading =

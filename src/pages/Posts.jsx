@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { LayoutGrid, Link2, List, Plus, Search } from 'lucide-react'
+import LoadingState from '../components/LoadingState'
 import PostFormModal from '../components/PostFormModal'
 import StatCard from '../components/StatCard'
 import { useWorkspace } from '../context/workspace-context'
@@ -68,13 +69,27 @@ function PostCard({ post, onClick }) {
 }
 
 function PostsList({ workspaceId }) {
-  const [posts, setPosts] = useState(() => getPosts(workspaceId))
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [platformFilter, setPlatformFilter] = useState('All')
   const [editingPost, setEditingPost] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [ideaLink, setIdeaLink] = useState('')
   const [view, setView] = useState('table')
+
+  useEffect(() => {
+    let active = true
+    getPosts(workspaceId).then((data) => {
+      if (active) {
+        setPosts(data)
+        setLoading(false)
+      }
+    })
+    return () => {
+      active = false
+    }
+  }, [workspaceId])
 
   const filteredPosts = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -115,8 +130,8 @@ function PostsList({ workspaceId }) {
     setModalOpen(true)
   }
 
-  function handleSave(postData) {
-    const updated = savePost({
+  async function handleSave(postData) {
+    const updated = await savePost({
       ...postData,
       id: editingPost?.id,
       workspaceId,
@@ -125,17 +140,18 @@ function PostsList({ workspaceId }) {
     setModalOpen(false)
   }
 
-  function handleDelete(postId) {
-    setPosts(deletePost(postId).filter((p) => p.workspaceId === workspaceId))
+  async function handleDelete(postId) {
+    const updated = await deletePost(postId)
+    setPosts(updated.filter((p) => p.workspaceId === workspaceId))
     setModalOpen(false)
   }
 
-  function handleBankIdea(e) {
+  async function handleBankIdea(e) {
     e.preventDefault()
     const url = ideaLink.trim()
     if (!url) return
 
-    const updated = savePost({
+    const updated = await savePost({
       workspaceId,
       title: '',
       platform: detectPlatformFromUrl(url),
@@ -144,6 +160,10 @@ function PostsList({ workspaceId }) {
     })
     setPosts(updated.filter((p) => p.workspaceId === workspaceId))
     setIdeaLink('')
+  }
+
+  if (loading) {
+    return <LoadingState />
   }
 
   return (

@@ -10,6 +10,7 @@ import {
   List,
   ListOrdered,
 } from 'lucide-react'
+import LoadingState from '../components/LoadingState'
 import { useWorkspace } from '../context/workspace-context'
 import { BRAND_BOOKS } from '../lib/constants'
 import { getStrategy, saveStrategy } from '../lib/storage'
@@ -44,12 +45,12 @@ function formatTimestamp(date) {
   })
 }
 
-function StrategyEditor({ workspaceId }) {
+function StrategyEditor({ workspaceId, initialContent }) {
   const [lastSavedAt, setLastSavedAt] = useState(null)
 
   const editor = useEditor({
     extensions: [StarterKit],
-    content: getStrategy(workspaceId),
+    content: initialContent,
     editorProps: {
       attributes: {
         class: 'tiptap-content focus:outline-none min-h-[400px] max-w-none',
@@ -175,6 +176,17 @@ function BrandBookView({ src, label }) {
 function StrategyContent({ workspaceId }) {
   const brandBook = BRAND_BOOKS[workspaceId]
   const [activeTab, setActiveTab] = useState('notes')
+  const [content, setContent] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    getStrategy(workspaceId).then((data) => {
+      if (active) setContent(data)
+    })
+    return () => {
+      active = false
+    }
+  }, [workspaceId])
 
   return (
     <>
@@ -201,7 +213,11 @@ function StrategyContent({ workspaceId }) {
       )}
 
       {activeTab === 'notes' || !brandBook ? (
-        <StrategyEditor workspaceId={workspaceId} />
+        content === null ? (
+          <LoadingState />
+        ) : (
+          <StrategyEditor workspaceId={workspaceId} initialContent={content} />
+        )
       ) : (
         <BrandBookView src={brandBook.src} label={brandBook.label} />
       )}
