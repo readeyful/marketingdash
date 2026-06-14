@@ -7,8 +7,6 @@ import {
   PLATFORM_DOT_COLORS,
   PLATFORM_ICONS,
   PLATFORMS,
-  POST_STATUSES,
-  STATUS_COLORS,
 } from '../lib/constants'
 import { deletePost, getPosts, savePost } from '../lib/storage'
 import {
@@ -109,7 +107,7 @@ function PostThumb({ post, isSelected, onClick, tall }) {
       className="relative w-full cursor-pointer overflow-hidden rounded-lg text-left transition duration-100 hover:scale-[1.02] hover:shadow-md"
       style={{
         backgroundColor: PAGE_BG,
-        outline: isSelected ? `2px solid ${STATUS_COLORS[post.status]}` : 'none',
+        outline: isSelected ? `2px solid ${ACCENT_SOLID_BG}` : 'none',
       }}
     >
       {post.imageUrl ? (
@@ -126,11 +124,6 @@ function PostThumb({ post, isSelected, onClick, tall }) {
           <Icon size={tall ? 22 : 16} />
         </div>
       )}
-      {/* Status dot — top right */}
-      <span
-        className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full ring-2 ring-white/70"
-        style={{ backgroundColor: STATUS_COLORS[post.status] }}
-      />
       <div className="flex items-center justify-between gap-1 px-1.5 py-1">
         <span className="truncate text-[11px] font-medium" style={{ color: INK }}>
           {post.title || 'Untitled'}
@@ -212,7 +205,6 @@ function CalendarView({ workspaceId }) {
   const [referenceDate, setReferenceDate] = useState(() => new Date())
   const [view, setView] = useState('month')
   const [platformFilter, setPlatformFilter] = useState('All')
-  const [statusFilter, setStatusFilter] = useState('All')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingPost, setEditingPost] = useState(null)
   const [defaultDate, setDefaultDate] = useState(null)
@@ -231,14 +223,11 @@ function CalendarView({ workspaceId }) {
   }
   const panelPost = selectedPost ?? lastPanelPost
 
-  const filtersActive = platformFilter !== 'All' || statusFilter !== 'All'
+  const filtersActive = platformFilter !== 'All'
 
   const filteredPosts = useMemo(
-    () =>
-      posts
-        .filter((p) => platformFilter === 'All' || p.platform === platformFilter)
-        .filter((p) => statusFilter === 'All' || p.status === statusFilter),
-    [posts, platformFilter, statusFilter],
+    () => posts.filter((p) => platformFilter === 'All' || p.platform === platformFilter),
+    [posts, platformFilter],
   )
 
   const postsByDate = useMemo(() => {
@@ -389,7 +378,6 @@ function CalendarView({ workspaceId }) {
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <FilterPills options={PLATFORMS} value={platformFilter} onChange={setPlatformFilter} />
-        <FilterPills options={POST_STATUSES} value={statusFilter} onChange={setStatusFilter} />
       </div>
 
       <div
@@ -436,10 +424,7 @@ function CalendarView({ workspaceId }) {
                     type="button"
                     className="pointer-events-auto font-medium underline"
                     style={{ color: INK }}
-                    onClick={() => {
-                      setPlatformFilter('All')
-                      setStatusFilter('All')
-                    }}
+                    onClick={() => setPlatformFilter('All')}
                   >
                     Clear filters
                   </button>
@@ -527,7 +512,6 @@ function CalendarView({ workspaceId }) {
         onDelete={handleDelete}
         post={editingPost}
         defaultDate={defaultDate}
-        defaultStatus="Scheduled"
       />
     </>
   )

@@ -8,15 +8,6 @@ export const PLATFORM_ICONS = {
   TikTok: FaTiktok,
 }
 
-export const POST_STATUSES = ['Idea', 'Draft', 'Scheduled', 'Posted']
-
-export const STATUS_COLORS = {
-  Idea: '#9CA3AF',
-  Draft: '#FBBF24',
-  Scheduled: '#3B82F6',
-  Posted: '#22C55E',
-}
-
 export const POST_TYPES = ['Carousel', 'Reel', 'Single Image', 'Story', 'Video']
 
 // Brand colors used for the small platform dot on calendar thumbnails.

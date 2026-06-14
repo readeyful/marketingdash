@@ -10,7 +10,7 @@ import {
   X,
 } from 'lucide-react'
 import CaptionGenerator from './CaptionGenerator'
-import { PLATFORM_ICONS, STATUS_COLORS } from '../lib/constants'
+import { PLATFORM_ICONS } from '../lib/constants'
 import {
   ACCENT_SOLID_BG,
   ACCENT_SOLID_TEXT,
@@ -130,16 +130,6 @@ export default function PostDetailPanel({
         {post.title || 'Untitled post'}
       </h2>
       <div className="mt-2 flex flex-wrap items-center gap-2">
-        <span
-          className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
-          style={{ backgroundColor: CARD_BG, color: INK }}
-        >
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: STATUS_COLORS[post.status] }}
-          />
-          {post.status}
-        </span>
         <span
           className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
           style={{ backgroundColor: CARD_BG, color: INK_MUTED }}

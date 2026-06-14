@@ -239,8 +239,8 @@ function TemplateTab({ form, update, isCandc }) {
 }
 
 function FromInspoTab({ workspaceId, selectedIds, onToggle }) {
-  // "Inspo" items are posts banked from a link on the Posts page: status
-  // Idea with a URL in notes. Exclude ones already imported into the Vault.
+  // "Inspo" items are posts banked from a link on the Posts page: marked
+  // as an idea with a URL in notes. Exclude ones already imported into the Vault.
   const candidates = useMemo(() => {
     const importedUrls = new Set(
       getVaultItems(workspaceId)
@@ -249,7 +249,7 @@ function FromInspoTab({ workspaceId, selectedIds, onToggle }) {
     )
     return getPosts(workspaceId).filter(
       (p) =>
-        p.status === 'Idea' &&
+        p.isIdea &&
         URL_PATTERN.test((p.sourceUrl ?? p.notes ?? '').trim()) &&
         !importedUrls.has((p.sourceUrl ?? p.notes).trim()),
     )

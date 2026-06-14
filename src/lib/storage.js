@@ -115,7 +115,7 @@ export function savePost(post) {
     all[idx] = { ...all[idx], ...post, updatedAt: now }
   } else {
     all.push({
-      status: 'Idea',
+      isIdea: false,
       scheduledDate: null,
       caption: '',
       notes: '',
@@ -214,7 +214,7 @@ export function deleteVaultItem(itemId) {
 }
 
 // Builds a vault item from a post banked via the Posts page link box
-// (status Idea with a URL in notes/sourceUrl).
+// (an idea with a URL in notes/sourceUrl).
 export function inspoPostToVaultItem(post, workspaceId) {
   const url = (post.sourceUrl ?? post.notes ?? '').trim()
   return {
@@ -237,7 +237,6 @@ export function scheduleVaultItem(itemId, date) {
     workspaceId: item.workspaceId,
     title: item.title,
     platform: item.platforms[0] ?? 'Instagram',
-    status: 'Scheduled',
     scheduledDate: date,
     caption: item.caption,
     notes: item.notes,

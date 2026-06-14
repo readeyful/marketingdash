@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { PLATFORMS, POST_STATUSES, POST_TYPES } from '../lib/constants'
+import { PLATFORMS, POST_TYPES } from '../lib/constants'
 import { ACCENT_SOLID_BG, ACCENT_SOLID_TEXT, INK_MUTED, INPUT_CLASS, LABEL_CLASS } from '../lib/theme'
 import Modal from './Modal'
 
 const EMPTY_POST = {
   title: '',
   platform: 'Instagram',
-  status: 'Idea',
   scheduledDate: '',
   caption: '',
   notes: '',
@@ -30,12 +29,10 @@ export default function PostFormModal({
   onDelete,
   post,
   defaultDate,
-  defaultStatus,
 }) {
   const [form, setForm] = useState(() => ({
     ...EMPTY_POST,
     scheduledDate: defaultDate ?? '',
-    status: defaultDate && defaultStatus ? defaultStatus : EMPTY_POST.status,
     ...post,
   }))
 
@@ -74,7 +71,7 @@ export default function PostFormModal({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <label className={LABEL_CLASS} style={{ color: INK_MUTED }}>
               Platform
@@ -92,25 +89,6 @@ export default function PostFormModal({
             </select>
           </div>
 
-          <div>
-            <label className={LABEL_CLASS} style={{ color: INK_MUTED }}>
-              Status
-            </label>
-            <select
-              className={INPUT_CLASS}
-              value={form.status}
-              onChange={(e) => update('status', e.target.value)}
-            >
-              {POST_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={LABEL_CLASS} style={{ color: INK_MUTED }}>
               Scheduled date

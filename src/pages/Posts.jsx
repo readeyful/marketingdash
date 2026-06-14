@@ -6,8 +6,6 @@ import { useWorkspace } from '../context/workspace-context'
 import {
   PLATFORM_ICONS,
   PLATFORMS,
-  POST_STATUSES,
-  STATUS_COLORS,
   detectPlatformFromUrl,
 } from '../lib/constants'
 import { deletePost, getPosts, savePost } from '../lib/storage'
@@ -40,21 +38,6 @@ function formatDateTime(isoString) {
   })
 }
 
-function StatusPill({ status }) {
-  return (
-    <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
-      style={{ backgroundColor: CARD_BG, color: INK }}
-    >
-      <span
-        className="h-2 w-2 rounded-full"
-        style={{ backgroundColor: STATUS_COLORS[status] }}
-      />
-      {status}
-    </span>
-  )
-}
-
 function PostCard({ post, onClick }) {
   const Icon = PLATFORM_ICONS[post.platform]
   return (
@@ -64,10 +47,7 @@ function PostCard({ post, onClick }) {
       className="flex cursor-pointer flex-col gap-3 rounded-2xl p-4 text-left transition hover:-translate-y-0.5"
       style={{ backgroundColor: CARD_BG }}
     >
-      <div className="flex items-center justify-between">
-        <Icon size={18} style={{ color: INK_MUTED }} />
-        <StatusPill status={post.status} />
-      </div>
+      <Icon size={18} style={{ color: INK_MUTED }} />
       <h3 className="font-display text-lg" style={{ color: INK }}>
         {post.title || 'Untitled post'}
       </h3>
@@ -91,7 +71,6 @@ function PostsList({ workspaceId }) {
   const [posts, setPosts] = useState(() => getPosts(workspaceId))
   const [search, setSearch] = useState('')
   const [platformFilter, setPlatformFilter] = useState('All')
-  const [statusFilter, setStatusFilter] = useState('All')
   const [editingPost, setEditingPost] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [ideaLink, setIdeaLink] = useState('')
@@ -101,7 +80,6 @@ function PostsList({ workspaceId }) {
     const query = search.trim().toLowerCase()
     return posts
       .filter((p) => platformFilter === 'All' || p.platform === platformFilter)
-      .filter((p) => statusFilter === 'All' || p.status === statusFilter)
       .filter(
         (p) =>
           !query ||
@@ -109,26 +87,23 @@ function PostsList({ workspaceId }) {
           p.caption.toLowerCase().includes(query),
       )
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-  }, [posts, search, platformFilter, statusFilter])
+  }, [posts, search, platformFilter])
 
-  const stats = useMemo(
-    () => [
+  const stats = useMemo(() => {
+    const todayString = new Date().toISOString().slice(0, 10)
+    return [
       { label: 'Total Posts', value: posts.length },
+      { label: 'Ideas', value: posts.filter((p) => p.isIdea).length },
       {
         label: 'Scheduled',
-        value: posts.filter((p) => p.status === 'Scheduled').length,
-      },
-      {
-        label: 'Drafts',
-        value: posts.filter((p) => p.status === 'Draft').length,
+        value: posts.filter((p) => p.scheduledDate && p.scheduledDate >= todayString).length,
       },
       {
         label: 'Posted',
-        value: posts.filter((p) => p.status === 'Posted').length,
+        value: posts.filter((p) => p.scheduledDate && p.scheduledDate < todayString).length,
       },
-    ],
-    [posts],
-  )
+    ]
+  }, [posts])
 
   function openNewPost() {
     setEditingPost(null)
@@ -164,7 +139,7 @@ function PostsList({ workspaceId }) {
       workspaceId,
       title: '',
       platform: detectPlatformFromUrl(url),
-      status: 'Idea',
+      isIdea: true,
       notes: url,
     })
     setPosts(updated.filter((p) => p.workspaceId === workspaceId))
@@ -236,19 +211,6 @@ function PostsList({ workspaceId }) {
           ))}
         </select>
 
-        <select
-          className={`${INPUT_CLASS} w-auto`}
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="All">All statuses</option>
-          {POST_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-
         <button
           type="button"
           onClick={openNewPost}
@@ -307,7 +269,6 @@ function PostsList({ workspaceId }) {
                 <tr style={{ color: INK_MUTED }}>
                   <th className="px-5 py-3 font-medium">Title</th>
                   <th className="px-5 py-3 font-medium">Platform</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
                   <th className="px-5 py-3 font-medium">Scheduled</th>
                   <th className="px-5 py-3 font-medium">Last edited</th>
                 </tr>
@@ -326,9 +287,6 @@ function PostsList({ workspaceId }) {
                       </td>
                       <td className="px-5 py-3" style={{ color: INK_MUTED }}>
                         <Icon size={16} />
-                      </td>
-                      <td className="px-5 py-3">
-                        <StatusPill status={post.status} />
                       </td>
                       <td className="px-5 py-3" style={{ color: INK_MUTED }}>
                         {formatDate(post.scheduledDate)}

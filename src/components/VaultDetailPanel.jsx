@@ -344,7 +344,7 @@ export default function VaultDetailPanel({
                 style={{ backgroundColor: CARD_BG, color: INK }}
               >
                 <span className="truncate font-medium">{post.title || 'Untitled'}</span>
-                <span style={{ color: INK_MUTED }}>{post.scheduledDate ?? post.status}</span>
+                <span style={{ color: INK_MUTED }}>{post.scheduledDate ?? 'Not scheduled'}</span>
               </Link>
             ))}
           </div>
