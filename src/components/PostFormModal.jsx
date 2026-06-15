@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PLATFORMS, POST_TYPES } from '../lib/constants'
+import { CONTENT_PILLARS, PLATFORMS, POST_TYPES } from '../lib/constants'
 import { ACCENT_SOLID_BG, ACCENT_SOLID_TEXT, INK_MUTED, INPUT_CLASS, LABEL_CLASS } from '../lib/theme'
 import Modal from './Modal'
 
@@ -10,6 +10,7 @@ const EMPTY_POST = {
   caption: '',
   notes: '',
   postType: '',
+  pillar: '',
   imageUrl: null,
 }
 
@@ -52,6 +53,7 @@ export default function PostFormModal({
       ...form,
       scheduledDate: form.scheduledDate || null,
       postType: form.postType || null,
+      pillar: form.pillar || null,
     })
   }
 
@@ -114,6 +116,24 @@ export default function PostFormModal({
               {POST_TYPES.map((t) => (
                 <option key={t} value={t}>
                   {t}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={LABEL_CLASS} style={{ color: INK_MUTED }}>
+              Content pillar
+            </label>
+            <select
+              className={INPUT_CLASS}
+              value={form.pillar ?? ''}
+              onChange={(e) => update('pillar', e.target.value)}
+            >
+              <option value="">—</option>
+              {CONTENT_PILLARS.map((p) => (
+                <option key={p} value={p}>
+                  {p}
                 </option>
               ))}
             </select>

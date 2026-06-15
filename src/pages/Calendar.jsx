@@ -32,7 +32,7 @@ import {
 } from '../lib/theme'
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const MAX_VISIBLE_ITEMS = 4
+const MAX_VISIBLE_ITEMS = 2
 const VIEW_OPTIONS = [
   { id: 'month', label: 'Month' },
   { id: 'twoWeek', label: '2 Weeks' },
@@ -128,24 +128,34 @@ function PostThumb({ post, isSelected, onClick, tall }) {
         <img
           src={post.imageUrl}
           alt=""
-          className={`w-full object-cover ${tall ? 'h-24' : 'h-12'}`}
+          className={`w-full object-cover ${tall ? 'aspect-[4/5]' : 'aspect-square'}`}
         />
       ) : (
         <div
-          className={`flex w-full items-center justify-center ${tall ? 'h-24' : 'h-12'}`}
+          className={`flex w-full items-center justify-center ${tall ? 'aspect-[4/5]' : 'aspect-square'}`}
           style={{ backgroundColor: CARD_BG, color: INK_MUTED }}
         >
-          <Icon size={tall ? 22 : 16} />
+          <Icon size={tall ? 28 : 20} />
         </div>
       )}
-      <div className="flex items-center justify-between gap-1 px-1.5 py-1">
-        <span className="truncate text-[11px] font-medium" style={{ color: INK }}>
-          {post.title || 'Untitled'}
-        </span>
-        <span
-          className="h-1.5 w-1.5 shrink-0 rounded-full"
-          style={{ backgroundColor: PLATFORM_DOT_COLORS[post.platform] }}
-        />
+      <div className="flex flex-col gap-1 px-1.5 py-1">
+        <div className="flex items-center justify-between gap-1">
+          <span className="truncate text-[11px] font-medium" style={{ color: INK }}>
+            {post.title || 'Untitled'}
+          </span>
+          <span
+            className="h-1.5 w-1.5 shrink-0 rounded-full"
+            style={{ backgroundColor: PLATFORM_DOT_COLORS[post.platform] }}
+          />
+        </div>
+        {post.pillar && (
+          <span
+            className="w-fit truncate rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+            style={{ backgroundColor: PAGE_BG, color: INK_MUTED }}
+          >
+            {post.pillar}
+          </span>
+        )}
       </div>
     </button>
   )
@@ -210,7 +220,7 @@ function DayCell({
   return (
     <div
       onClick={() => onSelectDay(day)}
-      className="group flex min-h-[8rem] cursor-pointer flex-col items-stretch gap-1 rounded-xl p-1.5 text-left transition hover:bg-(--border-soft) sm:min-h-[11rem]"
+      className="group flex min-h-[12rem] cursor-pointer flex-col items-stretch gap-1 rounded-xl p-1.5 text-left transition hover:bg-(--border-soft) sm:min-h-[18rem]"
       style={{
         backgroundColor: isCurrentMonth ? PAGE_BG : CARD_BG,
         opacity: isCurrentMonth ? 1 : 0.5,

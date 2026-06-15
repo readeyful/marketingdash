@@ -143,6 +143,7 @@ export async function savePost(post) {
           caption: '',
           notes: '',
           postType: null,
+          pillar: null,
           imageUrl: null,
           postGoal: '',
           postStrategy: '',
