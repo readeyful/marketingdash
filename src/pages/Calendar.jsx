@@ -32,7 +32,6 @@ import {
 } from '../lib/theme'
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const MAX_VISIBLE_ITEMS = 2
 const VIEW_OPTIONS = [
   { id: 'month', label: 'Month' },
   { id: 'twoWeek', label: '2 Weeks' },
@@ -213,9 +212,6 @@ function DayCell({
     ...posts.map((post) => ({ kind: 'post', data: post })),
     ...activities.map((activity) => ({ kind: 'activity', data: activity })),
   ]
-  const overflowing = compact && items.length > MAX_VISIBLE_ITEMS
-  const visibleItems = overflowing ? items.slice(0, MAX_VISIBLE_ITEMS - 1) : items
-  const overflow = items.length - visibleItems.length
 
   return (
     <div
@@ -257,7 +253,7 @@ function DayCell({
       </div>
 
       <div className="flex flex-col gap-1">
-        {visibleItems.map((item) =>
+        {items.map((item) =>
           item.kind === 'post' ? (
             <PostThumb
               key={item.data.id}
@@ -269,14 +265,6 @@ function DayCell({
           ) : (
             <ActivityBlock key={item.data.id} activity={item.data} onClick={onSelectActivity} />
           ),
-        )}
-        {overflow > 0 && (
-          <span
-            className="rounded-full px-1.5 py-0.5 text-center text-[11px] font-medium"
-            style={{ backgroundColor: CARD_BG, color: INK_MUTED }}
-          >
-            +{overflow} more
-          </span>
         )}
       </div>
     </div>
