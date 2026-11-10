@@ -13,7 +13,7 @@ import {
 } from '../lib/theme'
 
 export default function Login() {
-  const { session, signIn, signUp } = useAuth()
+  const { session, signIn, signUp, resetPassword } = useAuth()
   const [mode, setMode] = useState('sign-in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,14 +31,16 @@ export default function Login() {
     setInfo('')
     setSubmitting(true)
 
-    const { error } =
-      mode === 'sign-in' ? await signIn(email, password) : await signUp(email, password)
-
-    if (error) {
-      setError(error.message)
-    } else if (mode === 'sign-up') {
-      setInfo('Check your email to confirm your account, then sign in.')
+    let error
+    if (mode === 'forgot-password') {
+      ;({ error } = await resetPassword(email))
+      if (!error) setInfo('Check your email for a password reset link.')
+    } else {
+      ;({ error } = mode === 'sign-in' ? await signIn(email, password) : await signUp(email, password))
+      if (!error && mode === 'sign-up') setInfo('Check your email to confirm your account, then sign in.')
     }
+
+    if (error) setError(error.message)
     setSubmitting(false)
   }
 
@@ -48,10 +50,10 @@ export default function Login() {
       style={{ backgroundColor: PAGE_BG }}
     >
       <h1 className="font-display mb-2 text-4xl" style={{ color: INK }}>
-        Welcome <span className="italic">back</span>
+        {mode === 'forgot-password' ? 'Reset password' : <>Welcome <span className="italic">back</span></>}
       </h1>
       <p className="mb-10 text-base" style={{ color: INK_MUTED }}>
-        {mode === 'sign-in' ? 'Sign in to continue' : 'Create an account to get started'}
+        {mode === 'sign-in' ? 'Sign in to continue' : mode === 'sign-up' ? 'Create an account to get started' : "We'll send you a reset link"}
       </p>
 
       <form
@@ -72,19 +74,21 @@ export default function Login() {
             autoComplete="email"
           />
         </div>
-        <div>
-          <label className={LABEL_CLASS} style={{ color: INK_MUTED }}>
-            Password
-          </label>
-          <input
-            type="password"
-            required
-            className={INPUT_CLASS}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'}
-          />
-        </div>
+        {mode !== 'forgot-password' && (
+          <div>
+            <label className={LABEL_CLASS} style={{ color: INK_MUTED }}>
+              Password
+            </label>
+            <input
+              type="password"
+              required
+              className={INPUT_CLASS}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'}
+            />
+          </div>
+        )}
 
         {error && (
           <p className="text-sm" style={{ color: '#C0524A' }}>
@@ -103,20 +107,31 @@ export default function Login() {
           className="mt-2 rounded-full px-4 py-2 text-sm font-medium transition hover:opacity-90 disabled:opacity-60"
           style={{ backgroundColor: ACCENT_SOLID_BG, color: ACCENT_SOLID_TEXT }}
         >
-          {mode === 'sign-in' ? 'Sign in' : 'Sign up'}
+          {mode === 'sign-in' ? 'Sign in' : mode === 'sign-up' ? 'Sign up' : 'Send reset link'}
         </button>
+
+        {mode === 'sign-in' && (
+          <button
+            type="button"
+            onClick={() => { setMode('forgot-password'); setError(''); setInfo('') }}
+            className="text-sm font-medium underline"
+            style={{ color: INK_MUTED }}
+          >
+            Forgot your password?
+          </button>
+        )}
 
         <button
           type="button"
           onClick={() => {
-            setMode((m) => (m === 'sign-in' ? 'sign-up' : 'sign-in'))
+            setMode((m) => (m === 'sign-up' ? 'sign-in' : m === 'forgot-password' ? 'sign-in' : 'sign-up'))
             setError('')
             setInfo('')
           }}
           className="text-sm font-medium underline"
           style={{ color: INK_MUTED }}
         >
-          {mode === 'sign-in' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
+          {mode === 'sign-in' ? 'Need an account? Sign up' : 'Back to sign in'}
         </button>
       </form>
     </div>
