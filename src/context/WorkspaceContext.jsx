@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAuth } from './auth-context'
 import {
   getActiveWorkspaceId,
   getWorkspaces,
@@ -9,7 +8,6 @@ import {
 import { WorkspaceContext } from './workspace-context'
 
 export function WorkspaceProvider({ children }) {
-  const { session } = useAuth()
   const [workspaces, setWorkspaces] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeWorkspaceId, setActiveWorkspaceIdState] = useState(() =>
@@ -18,8 +16,7 @@ export function WorkspaceProvider({ children }) {
 
   useEffect(() => {
     let active = true
-    const load = session ? getWorkspaces() : Promise.resolve([])
-    load.then((data) => {
+    getWorkspaces().then((data) => {
       if (active) {
         setWorkspaces(data)
         setLoading(false)
@@ -28,7 +25,7 @@ export function WorkspaceProvider({ children }) {
     return () => {
       active = false
     }
-  }, [session])
+  }, [])
 
   const activeWorkspace = useMemo(
     () => workspaces.find((w) => w.id === activeWorkspaceId) ?? null,

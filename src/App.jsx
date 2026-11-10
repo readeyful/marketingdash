@@ -1,6 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
-import { useAuth } from './context/auth-context'
 import { ThemeProvider } from './context/ThemeContext'
 import { WorkspaceProvider } from './context/WorkspaceContext'
 import { useWorkspace } from './context/workspace-context'
@@ -13,15 +12,6 @@ import Posts from './pages/Posts'
 import Vault from './pages/Vault'
 import Finances from './pages/Finances'
 import Strategy from './pages/Strategy'
-
-function RequireAuth({ children }) {
-  const { session, loading } = useAuth()
-  if (loading) return <LoadingState />
-  if (!session) {
-    return <Navigate to="/login" replace />
-  }
-  return children
-}
 
 function RequireWorkspace({ children }) {
   const { activeWorkspace, loading } = useWorkspace()
@@ -40,21 +30,12 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
-              <Route
-                path="/"
-                element={
-                  <RequireAuth>
-                    <WorkspaceSelector />
-                  </RequireAuth>
-                }
-              />
+              <Route path="/" element={<WorkspaceSelector />} />
               <Route
                 element={
-                  <RequireAuth>
-                    <RequireWorkspace>
-                      <AppLayout />
-                    </RequireWorkspace>
-                  </RequireAuth>
+                  <RequireWorkspace>
+                    <AppLayout />
+                  </RequireWorkspace>
                 }
               >
                 <Route path="/calendar" element={<Calendar />} />
